@@ -7,6 +7,15 @@ from pygame.locals import (
         QUIT,
     )
 
+def updategrid(grid,enemies,all_sprites):
+    for y in range(SCREEN_HEIGHT//10):
+                for x in range(SCREEN_WIDTH//10):
+                    spawner = grid[y][x]
+                    new_enemy = spawner.update()
+                    if new_enemy is not None:
+                        enemies.add(new_enemy)
+                        all_sprites.add(new_enemy)
+
 
 def main():
     pygame.init()
@@ -14,58 +23,66 @@ def main():
 
     # custom event for adding a new enemy.
     ADDENEMY = pygame.USEREVENT + 1
-    pygame.time.set_timer(ADDENEMY, 500)
+    #pygame.time.set_timer(ADDENEMY, 500)
 
-    player = Player()
-    # groups to hold enemy sprites, and every sprite
-    # - 'enemies' is used for collision detection and position updates
-    # - 'all_sprites' is used for rendering
+    player = Player(10)
+    """groups to hold enemy sprites, and every sprite
+    - 'enemies' is used for collision detection and position updates
+    - 'all_sprites' is used for rendering"""
     enemies = pygame.sprite.Group()
     all_sprites = pygame.sprite.Group()
     all_sprites.add(player)
+    #fazendo os spawners quando o jogo rodar pela 1 vez
+    grid = [[] for _ in range(SCREEN_HEIGHT//10)]
+    for y in range(SCREEN_HEIGHT//10):
+        for x in range(SCREEN_WIDTH//10):
+            grid[y].append(Spawner(x*10, y*10))
 
+    counter = 0
     running = True
     while running:
-        # Look at every event in the queue
+        counter += 1 #para o teste do strategy
+        counter = counter % 2000
         for event in pygame.event.get():
-            # Did the user hit a key?
             if event.type == KEYDOWN:
-                # Was it the Escape key? If so, stop the loop
                 if event.key == K_ESCAPE:
                     running = False
 
-            # Did the user click the window close button? If so, stop the loop
             elif event.type == QUIT:
                 running = False
 
-            # Should we add a new enemy?
-            elif event.type == ADDENEMY:
-                # Create the new enemy, and add it to our sprite groups
-                new_enemy = Enemy()
-                enemies.add(new_enemy)
-                all_sprites.add(new_enemy)
+            # elif event.type == ADDENEMY:
+            #     new_enemy = Enemy(1,) 
+            #     enemies.add(new_enemy)
+            #     all_sprites.add(new_enemy)
 
-        # Get the set of keys pressed and check for user input
         pressed_keys = pygame.key.get_pressed()
         player.update(pressed_keys)
-
-        # Update the position of our enemies
+        
+        if counter == 0:
+            strategy_reset(grid)
+        elif counter == 1000:
+            strategy_leftright(grid)
+            updategrid(grid, enemies, all_sprites)
+        elif counter == 1999:
+            strategy_updown(grid)
+            updategrid(grid, enemies, all_sprites)
         enemies.update()
+        player.surf.get
 
-        # Fill the screen with black
         screen.fill((0, 0, 0))
 
-        # Blits all sprites (draws sprites into 'screen')
         for entity in all_sprites:
             screen.blit(entity.surf, entity.rect)
 
-        # Check if any enemies have collided with the player
-        if pygame.sprite.spritecollideany(player, enemies):
-            # If so, remove the player and stop the loop
-            player.kill()
-            running = False
+        collided_enemy = pygame.sprite.spritecollideany(player, enemies)
+        if collided_enemy:
+            collided_enemy.kill()
+            player.hp -= 1
+            if player.hp <= 0:
+                player.kill()
+                running = False
 
-        # Flip everything to the display
         pygame.display.flip()
 
     pygame.quit()
