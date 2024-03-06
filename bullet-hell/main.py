@@ -68,7 +68,6 @@ def main():
             strategy_updown(grid)
             updategrid(grid, enemies, all_sprites)
         enemies.update()
-        player.surf.get
 
         screen.fill((0, 0, 0))
 
