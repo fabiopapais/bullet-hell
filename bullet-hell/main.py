@@ -9,12 +9,12 @@ from pygame.locals import (
 
 def updategrid(grid,enemies,all_sprites):
     for y in range(SCREEN_HEIGHT//10):
-                for x in range(SCREEN_WIDTH//10):
-                    spawner = grid[y][x]
-                    new_enemy = spawner.update()
-                    if new_enemy is not None:
-                        enemies.add(new_enemy)
-                        all_sprites.add(new_enemy)
+        for x in range(SCREEN_WIDTH//10):
+            spawner = grid[y][x]
+            new_enemy = spawner.update()
+            if new_enemy is not None:
+                enemies.add(new_enemy)
+                all_sprites.add(new_enemy)
 
 
 def main():
@@ -61,11 +61,14 @@ def main():
         
         if counter == 0:
             strategy_reset(grid)
-        elif counter == 1000:
-            strategy_leftright(grid)
-            updategrid(grid, enemies, all_sprites)
-        elif counter == 1999:
-            strategy_updown(grid)
+        # elif counter == 1000:
+        #     strategy_leftright(grid)
+        #     updategrid(grid, enemies, all_sprites)
+        # elif counter == 1999:
+        #     strategy_updown(grid)
+        #     updategrid(grid, enemies, all_sprites)
+        if counter == 1000:
+            strategy_fast(grid, player)
             updategrid(grid, enemies, all_sprites)
         enemies.update()
 

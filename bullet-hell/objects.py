@@ -1,6 +1,7 @@
 import pygame
 import random
 
+from math import sqrt
 from settings import *
 
 from pygame.locals import (
@@ -88,6 +89,14 @@ class Spawner(pygame.sprite.Sprite):
         if self.active:
             return Enemy(HP=1, speed=self.speed, position=(self.x, self.y))
 
+def vector2d(endP: list, startP: list, speed: int) -> list:
+    """
+    recives two points and the value that you want the resulting vector to be scaled to 
+    """
+    Norm = sqrt((endP[0] - startP[0])**2+(endP[1] - startP[1])**2)
+    K = speed/Norm
+    return [(endP[0] - startP[0])*K, -(endP[1] - startP[1])*K]
+
 def strategy_reset(grid):
         for i in range(SCREEN_HEIGHT//10):
             for j in range(SCREEN_WIDTH//10):
@@ -112,15 +121,16 @@ def strategy_leftright(grid):
             spawner_atual.active = True
             spawner_atual.set_speed(velocidade_base)
 
-# def strategy_fast(grid, player): still in the making
-#     basee = [0,80]
-#     bas = [50]
-#     relative_speed = (player.surf.get_at(),0)
-#     for a in basee:
-#         for b in bas:
-#             spawner_atual = grid[a][b]
-#             spawner_atual.active = True
-#             spawner_atual.set_speed(relative_speed)         
+
+def strategy_fast(grid, player):
+    print(len(grid),len(grid[0]))
+    basee = [0,99]
+    bas = [50]
+    for a in basee:
+        for b in bas:
+            spawner_atual = grid[b][a]
+            spawner_atual.active = True
+            spawner_atual.set_speed(vector2d([player.rect.centerx,player.rect.centery],[b*10,a*10],1))
     
 
         
