@@ -1,15 +1,14 @@
 import pygame
 from settings import *
 from objects import *
-from pygame.locals import (
-        K_ESCAPE,
+from pygame.locals import (        K_ESCAPE,
         KEYDOWN,
         QUIT,
     )
 
 def updategrid(grid,enemies,all_sprites):
-    for y in range(SCREEN_HEIGHT//10):
-        for x in range(SCREEN_WIDTH//10):
+    for y in range(SCREEN_HEIGHT//gsd):
+        for x in range(SCREEN_WIDTH//gsd):
             spawner = grid[y][x]
             new_enemy = spawner.update()
             if new_enemy is not None:
@@ -25,7 +24,7 @@ def main():
     ADDENEMY = pygame.USEREVENT + 1
     #pygame.time.set_timer(ADDENEMY, 500)
 
-    player = Player(10)
+    player = Player(999)
     """groups to hold enemy sprites, and every sprite
     - 'enemies' is used for collision detection and position updates
     - 'all_sprites' is used for rendering"""
@@ -33,16 +32,17 @@ def main():
     all_sprites = pygame.sprite.Group()
     all_sprites.add(player)
     #fazendo os spawners quando o jogo rodar pela 1 vez
-    grid = [[] for _ in range(SCREEN_HEIGHT//10)]
-    for y in range(SCREEN_HEIGHT//10):
-        for x in range(SCREEN_WIDTH//10):
-            grid[y].append(Spawner(x*10, y*10))
+    grid = [[] for _ in range(SCREEN_HEIGHT//gsd)]
+    for y in range(SCREEN_HEIGHT//gsd):
+        for x in range(SCREEN_WIDTH//gsd):
+            grid[y].append(Spawner(x*gsd, y*gsd))
 
     counter = 0
     running = True
+    clock = pygame.time.Clock()
     while running:
         counter += 1 #para o teste do strategy
-        counter = counter % 2000
+        counter = counter % 500
         for event in pygame.event.get():
             if event.type == KEYDOWN:
                 if event.key == K_ESCAPE:
@@ -61,15 +61,16 @@ def main():
         
         if counter == 0:
             strategy_reset(grid)
-        # elif counter == 1000:
-        #     strategy_leftright(grid)
-        #     updategrid(grid, enemies, all_sprites)
-        # elif counter == 1999:
-        #     strategy_updown(grid)
-        #     updategrid(grid, enemies, all_sprites)
-        if counter == 1000:
-            strategy_fast(grid, player)
+        if counter == 2:
+            strategy_updown(grid)
             updategrid(grid, enemies, all_sprites)
+        # if counter not in [0,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90]:
+        if player.rect.centerx < 200:
+            strategy_leftright(grid)
+            updategrid(grid, enemies, all_sprites)
+        # if counter == 1:
+        #     strategy_fast(grid, player)
+        #     updategrid(grid, enemies, all_sprites)
         enemies.update()
 
         screen.fill((0, 0, 0))
@@ -86,7 +87,7 @@ def main():
                 running = False
 
         pygame.display.flip()
-
+        clock.tick(120)
     pygame.quit()
 
 if __name__ == "__main__":

@@ -10,11 +10,11 @@ from pygame.locals import (
     K_LEFT,
     K_RIGHT,
 )
-
+gsd = 10 #instead of creating a grid of 1000x800 we creat a grid of 100x80
 class Player(pygame.sprite.Sprite):
     def __init__(self, HP: int):
         super(Player, self).__init__()
-        self.surf = pygame.Surface((50, 50))
+        self.surf = pygame.Surface((30, 30))
         self.surf.fill((255, 255, 255))
         self.rect = self.surf.get_rect(center = (500, 400))
         self.hp = HP
@@ -56,7 +56,6 @@ class Enemy(pygame.sprite.Sprite):
         self.rect = self.surf.get_rect(
             center=position
         )
-        self.speed = 1
 
     # Move the sprite based on speed
     # Remove it when it passes the left edge of the screen
@@ -89,13 +88,35 @@ class Spawner(pygame.sprite.Sprite):
         if self.active:
             return Enemy(HP=1, speed=self.speed, position=(self.x, self.y))
 
+def gcd(a, b):
+    if a == 0:
+        return b
+    return gcd(b % a, a)
+
 def vector2d(endP: list, startP: list, speed: int) -> list:
     """
     recives two points and the value that you want the resulting vector to be scaled to 
     """
-    Norm = sqrt((endP[0] - startP[0])**2+(endP[1] - startP[1])**2)
-    K = speed/Norm
-    return [(endP[0] - startP[0])*K, -(endP[1] - startP[1])*K]
+    if endP[0] > startP[0]:
+        dx = 1
+    elif endP[0] == startP[0]:
+        dx = 0
+    else:
+        dx = -1
+    
+    if endP[1] > startP[1]:
+        dy = 1
+    elif endP[1] == startP[1]:
+        dy = 0
+    else:
+        dy = -1
+
+    dx *= abs(endP[0] - startP[0])
+    dy *= abs(endP[1] - startP[1])
+
+    gc = gcd(abs(endP[0] - startP[0]), abs(endP[1] - startP[1]))
+
+    return (dx*speed//gc, dy*speed//gc)
 
 def strategy_reset(grid):
         for i in range(SCREEN_HEIGHT//10):
@@ -104,9 +125,8 @@ def strategy_reset(grid):
                 spawner_atual.active = False
                 spawner_atual.set_speed((0,0))
 
-
 def strategy_updown(grid):
-        base = [2,27,52,77,98]
+        base = [2,(SCREEN_WIDTH//(5*gsd)),(2*SCREEN_WIDTH//(5*gsd)),(3*SCREEN_WIDTH//(5*gsd)),(4*SCREEN_WIDTH//(5*gsd)),(SCREEN_WIDTH//gsd -2)]
         velocidade_base = (0,1)
         for j in base:
             spawner_atual = grid[0][j]
@@ -114,23 +134,21 @@ def strategy_updown(grid):
             spawner_atual.set_speed(velocidade_base)
 
 def strategy_leftright(grid):
-        base = [2,22,42,62,78]
+        base = [2,(SCREEN_HEIGHT//(5*gsd)),(2*SCREEN_HEIGHT//(5*gsd)),(3*SCREEN_HEIGHT//(5*gsd)),(4*SCREEN_HEIGHT//(5*gsd)),(SCREEN_HEIGHT//gsd -2)]
         velocidade_base = (1,0)
         for j in base:
             spawner_atual = grid[j][0]
             spawner_atual.active = True
             spawner_atual.set_speed(velocidade_base)
 
-
 def strategy_fast(grid, player):
-    print(len(grid),len(grid[0]))
-    basee = [0,99]
+    basee = [20,70]
     bas = [50]
     for a in basee:
         for b in bas:
             spawner_atual = grid[b][a]
             spawner_atual.active = True
-            spawner_atual.set_speed(vector2d([player.rect.centerx,player.rect.centery],[b*10,a*10],1))
+            spawner_atual.set_speed(vector2d([player.rect.centerx,player.rect.centery],[a*gsd,b*gsd],1))
     
 
         
