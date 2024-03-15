@@ -30,7 +30,6 @@ class Player(pygame.sprite.Sprite):
         if pressed_keys[K_RIGHT]:
             self.rect.move_ip(2, 0)
 
-        # keeps player on the screen
         if self.rect.left < 0:
             self.rect.left = 0
         elif self.rect.right > SCREEN_WIDTH:
@@ -52,13 +51,10 @@ class Enemy(pygame.sprite.Sprite):
         self.hp = HP
         self.xvelocity = speed[0]
         self.yvelocity = speed[1]
-        # spawns the enemy anywhere 200 blocks far from the edge
         self.rect = self.surf.get_rect(
             center=position
         )
 
-    # Move the sprite based on speed
-    # Remove it when it passes the left edge of the screen
     def update(self):
         self.rect.move_ip(self.xvelocity, self.yvelocity)
         if self.rect.right < 0:
@@ -88,39 +84,9 @@ class Spawner(pygame.sprite.Sprite):
         if self.active:
             return Enemy(HP=1, speed=self.speed, position=(self.x, self.y))
 
-def gcd(a, b):
-    if a == 0:
-        return b
-    return gcd(b % a, a)
-
-def vector2d(endP: list, startP: list, speed: int) -> list:
-    """
-    recives two points and the value that you want the resulting vector to be scaled to 
-    """
-    if endP[0] > startP[0]:
-        dx = 1
-    elif endP[0] == startP[0]:
-        dx = 0
-    else:
-        dx = -1
-    
-    if endP[1] > startP[1]:
-        dy = 1
-    elif endP[1] == startP[1]:
-        dy = 0
-    else:
-        dy = -1
-
-    dx *= abs(endP[0] - startP[0])
-    dy *= abs(endP[1] - startP[1])
-
-    gc = gcd(abs(endP[0] - startP[0]), abs(endP[1] - startP[1]))
-
-    return (dx*speed//gc, dy*speed//gc)
-
 def strategy_reset(grid):
-        for i in range(SCREEN_HEIGHT//10):
-            for j in range(SCREEN_WIDTH//10):
+        for i in range(SCREEN_HEIGHT//gsd):
+            for j in range(SCREEN_WIDTH//gsd):
                 spawner_atual = grid[i][j]
                 spawner_atual.active = False
                 spawner_atual.set_speed((0,0))
@@ -141,14 +107,18 @@ def strategy_leftright(grid):
             spawner_atual.active = True
             spawner_atual.set_speed(velocidade_base)
 
-def strategy_fast(grid, player):
-    basee = [20,70]
-    bas = [50]
-    for a in basee:
-        for b in bas:
-            spawner_atual = grid[b][a]
+
+cord = ((20,20),(20,70),(60,20),(60,70))
+vel = ((0,1),(-1,0),(1,0),(0,-1))
+def strategy_square(grid, cordenadas: tuple,velocidades: tuple):
+    for a in cordenadas:
+        for b in velocidades:
+            spawner_atual = grid[a[0]][a[1]]
             spawner_atual.active = True
-            spawner_atual.set_speed(vector2d([player.rect.centerx,player.rect.centery],[a*gsd,b*gsd],1))
-    
+            spawner_atual.set_speed((b[0],b[1]))
+            print(spawner_atual.__dict__)
+
+# class Colectable(pygame.sprite.Sprite):
+#     def speed 
 
         

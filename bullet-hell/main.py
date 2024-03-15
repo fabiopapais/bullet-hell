@@ -5,8 +5,11 @@ from pygame.locals import (        K_ESCAPE,
         KEYDOWN,
         QUIT,
     )
-
+HP_inicial = 10
 def updategrid(grid,enemies,all_sprites):
+    """
+    acctually creates the enimies
+    """
     for y in range(SCREEN_HEIGHT//gsd):
         for x in range(SCREEN_WIDTH//gsd):
             spawner = grid[y][x]
@@ -24,14 +27,15 @@ def main():
     ADDENEMY = pygame.USEREVENT + 1
     #pygame.time.set_timer(ADDENEMY, 500)
 
-    player = Player(999)
+    player = Player(HP_inicial)
     """groups to hold enemy sprites, and every sprite
     - 'enemies' is used for collision detection and position updates
     - 'all_sprites' is used for rendering"""
     enemies = pygame.sprite.Group()
     all_sprites = pygame.sprite.Group()
+    collectables = pygame.sprite.Group() #grupo de coletaveis
     all_sprites.add(player)
-    #fazendo os spawners quando o jogo rodar pela 1 vez
+    #generating the spawners on the initialization
     grid = [[] for _ in range(SCREEN_HEIGHT//gsd)]
     for y in range(SCREEN_HEIGHT//gsd):
         for x in range(SCREEN_WIDTH//gsd):
@@ -51,26 +55,22 @@ def main():
             elif event.type == QUIT:
                 running = False
 
-            # elif event.type == ADDENEMY:
-            #     new_enemy = Enemy(1,) 
-            #     enemies.add(new_enemy)
-            #     all_sprites.add(new_enemy)
 
         pressed_keys = pygame.key.get_pressed()
         player.update(pressed_keys)
         
-        if counter == 0:
-            strategy_reset(grid)
+        
         if counter == 2:
             strategy_updown(grid)
             updategrid(grid, enemies, all_sprites)
-        # if counter not in [0,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90]:
-        if player.rect.centerx < 200:
+        if player.rect.centerx < 200 and counter%30 == 0:
             strategy_leftright(grid)
             updategrid(grid, enemies, all_sprites)
-        # if counter == 1:
-        #     strategy_fast(grid, player)
-        #     updategrid(grid, enemies, all_sprites)
+        if HP_inicial//2 > player.hp and counter%30 == 0: #
+            strategy_square(grid,((20,20),(20,70),(60,20),(60,70)),((0,1),(-1,0),(1,0),(0,-1)))
+        
+        updategrid(grid, enemies, all_sprites)
+        strategy_reset(grid)
         enemies.update()
 
         screen.fill((0, 0, 0))
