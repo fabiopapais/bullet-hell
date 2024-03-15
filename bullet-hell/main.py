@@ -5,6 +5,7 @@ from pygame.locals import (
         K_ESCAPE,
         KEYDOWN,
         QUIT,
+        K_SPACE,
     )
 
 def updategrid(grid,enemies,all_sprites):
@@ -25,15 +26,14 @@ def main():
     ADDENEMY = pygame.USEREVENT + 1
     #pygame.time.set_timer(ADDENEMY, 500)
 
-    player = Player(10)
-    shoot_player = Shoot_player((, (1,2), (1 , 0))
+    player = Player(10, [500, 400])
     """groups to hold enemy sprites, and every sprite
     - 'enemies' is used for collision detection and position updates
     - 'all_sprites' is used for rendering"""
     enemies = pygame.sprite.Group()
+    ally_shoots = pygame.sprite.Group()
     all_sprites = pygame.sprite.Group()
     all_sprites.add(player)
-    all_sprites.add(shoot_player)
     #fazendo os spawners quando o jogo rodar pela 1 vez
     grid = [[] for _ in range(SCREEN_HEIGHT//10)]
     for y in range(SCREEN_HEIGHT//10):
@@ -59,8 +59,14 @@ def main():
             #     all_sprites.add(new_enemy)
 
         pressed_keys = pygame.key.get_pressed()
+        if pressed_keys == K_SPACE:
+          shoot_player = (Shoot_player(player.position, (1,2), (1 , 0)))
+          ally_shoots.add(shoot_player)
+          all_sprites.add(shoot_player)
+        
         player.update(pressed_keys)
-        shoot_player.update(shoot_player.direction)
+        ally_shoots.update(shoot_player.direction)
+
         
         if counter == 0:
             strategy_reset(grid)

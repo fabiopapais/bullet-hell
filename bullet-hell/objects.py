@@ -12,23 +12,28 @@ from pygame.locals import (
 )
 gsd = 10 #instead of creating a grid of 1000x800 we creat a grid of 100x80
 class Player(pygame.sprite.Sprite):
-    def __init__(self, HP: int):
+    def __init__(self, HP: int, position : list):
         super(Player, self).__init__()
         self.surf = pygame.Surface((30, 30))
         self.surf.fill((255, 255, 255))
         self.rect = self.surf.get_rect(center = (500, 400))
+        self.position = [500, 400]
         self.hp = HP
 
     # Moves the sprite based on keypresses
     def update(self, pressed_keys):
         if pressed_keys[K_UP]:
             self.rect.move_ip(0, -2)
+            self.position[1] -= 2
         if pressed_keys[K_DOWN]:
             self.rect.move_ip(0, 2)
+            self.position[1] += 2
         if pressed_keys[K_LEFT]:
             self.rect.move_ip(-2, 0)
+            self.position[0] -= 2
         if pressed_keys[K_RIGHT]:
             self.rect.move_ip(2, 0)
+            self.position[0] += 2
 
         if self.rect.left < 0:
             self.rect.left = 0
@@ -122,7 +127,7 @@ def strategy_square(grid, cordenadas: tuple,velocidades: tuple):
 #     def speed 
             
 class Shoot_player(pygame.sprite.Sprite):
-  def __init__(self, position : tuple , speed : tuple, direction : tuple):
+  def __init__(self, position : list , speed : tuple, direction : tuple):
     super(Shoot_player, self).__init__()
     self.surf = pygame.Surface((10, 10))
     self.surf.fill((255, 100, 92))
