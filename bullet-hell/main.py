@@ -17,13 +17,15 @@ screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 ADDENEMY = pygame.USEREVENT + 1
 pygame.time.set_timer(ADDENEMY, 500)
 
-player = Player()
+player = Player(10)
+shoot_player = Shoot_player((20,30), (1,2) , (1,2))
 # groups to hold enemy sprites, and every sprite
 # - 'enemies' is used for collision detection and position updates
 # - 'all_sprites' is used for rendering
 enemies = pygame.sprite.Group()
 all_sprites = pygame.sprite.Group()
 all_sprites.add(player)
+all_sprites.add(shoot_player)
 
 running = True
 while running:
