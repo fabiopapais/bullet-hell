@@ -11,12 +11,11 @@ from pygame.locals import (
 )
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, HP: int):
+    def __init__(self):
         super(Player, self).__init__()
         self.surf = pygame.Surface((50, 50))
         self.surf.fill((255, 255, 255))
-        self.rect = self.surf.get_rect(center = (500, 400))
-        self.hp = HP
+        self.rect = self.surf.get_rect()
 
     # Moves the sprite based on keypresses
     def update(self, pressed_keys):
@@ -41,86 +40,22 @@ class Player(pygame.sprite.Sprite):
 
 
 class Enemy(pygame.sprite.Sprite):
-    def __init__(self, HP: int, speed: tuple, position: tuple):
-        """
-        The velocity and position are defined as (x, y)
-        """
+    def __init__(self):
         super(Enemy, self).__init__()
-        self.surf = pygame.Surface((20, 20)) #tamanho do quadrado
+        self.surf = pygame.Surface((20, 20))
         self.surf.fill((255, 0, 0))
-        self.hp = HP
-        self.xvelocity = speed[0]
-        self.yvelocity = speed[1]
         # spawns the enemy anywhere 200 blocks far from the edge
         self.rect = self.surf.get_rect(
-            center=position
+            center=(
+                random.randint(SCREEN_WIDTH - 300, SCREEN_WIDTH), 
+                random.randint(SCREEN_HEIGHT - 300, SCREEN_HEIGHT)
+            )
         )
         self.speed = 1
 
     # Move the sprite based on speed
     # Remove it when it passes the left edge of the screen
     def update(self):
-        self.rect.move_ip(self.xvelocity, self.yvelocity)
+        self.rect.move_ip(-self.speed, 0)
         if self.rect.right < 0:
             self.kill()
-        elif self.rect.left > SCREEN_WIDTH:
-            self.kill()
-        elif self.rect.bottom < 0:
-            self.kill()
-        elif self.rect.top > SCREEN_HEIGHT:
-            self.kill()
-        
-
-class Spawner(pygame.sprite.Sprite): 
-    """
-    spawner invisiveis sem colisao
-    """
-    def __init__(self,x:int , y:int, active= False) -> None:
-        super(Spawner, self).__init__()
-        self.x = x
-        self.y = y
-        self.active = active
-
-    def set_speed(self, speed: tuple):
-        self.speed = speed
-
-    def update(self) -> Enemy: #vai ser o bagulho que escolhe o padrao de inimigos que vai dar essa velocidade, fixa ou relativa ao player
-        if self.active:
-            return Enemy(HP=1, speed=self.speed, position=(self.x, self.y))
-
-def strategy_reset(grid):
-        for i in range(SCREEN_HEIGHT//10):
-            for j in range(SCREEN_WIDTH//10):
-                spawner_atual = grid[i][j]
-                spawner_atual.active = False
-                spawner_atual.set_speed((0,0))
-
-
-def strategy_updown(grid):
-        base = [2,27,52,77,98]
-        velocidade_base = (0,1)
-        for j in base:
-            spawner_atual = grid[0][j]
-            spawner_atual.active = True
-            spawner_atual.set_speed(velocidade_base)
-
-def strategy_leftright(grid):
-        base = [2,22,42,62,78]
-        velocidade_base = (1,0)
-        for j in base:
-            spawner_atual = grid[j][0]
-            spawner_atual.active = True
-            spawner_atual.set_speed(velocidade_base)
-
-# def strategy_fast(grid, player): still in the making
-#     basee = [0,80]
-#     bas = [50]
-#     relative_speed = (player.surf.get_at(),0)
-#     for a in basee:
-#         for b in bas:
-#             spawner_atual = grid[a][b]
-#             spawner_atual.active = True
-#             spawner_atual.set_speed(relative_speed)         
-    
-
-        
