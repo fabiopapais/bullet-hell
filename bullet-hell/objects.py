@@ -124,10 +124,20 @@ def strategy_square(grid, cordenadas: tuple,velocidades: tuple):
 class Shoot_player(pygame.sprite.Sprite):
   def __init__(self, position : tuple , speed : tuple, direction : tuple):
     super(Shoot_player, self).__init__()
-    self.surf = pygame.Surface((20, 15))
-    self.surf.fill((102, 0, 0))
+    self.surf = pygame.Surface((10, 10))
+    self.surf.fill((255, 100, 92))
     self.rect = self.surf.get_rect(center=position)
     self.positionx = position[0]
     self.positiony = position[1]
     self.speed = speed
     self.direction = direction
+  
+  def update(self, direction):
+      if direction == (1, 0):
+          self.rect.move_ip(1, 0)
+      elif direction == (-1, 0):
+          self.rect.move_ip(-1, 0)
+      elif direction == (0, 1):
+          self.rect.move_ip(0, 1)
+      elif direction == (0 , -1):
+          self.rect.move_ip(0, 1)
