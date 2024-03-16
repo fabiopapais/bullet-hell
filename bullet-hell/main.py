@@ -26,7 +26,9 @@ def main():
     ADDENEMY = pygame.USEREVENT + 1
     #pygame.time.set_timer(ADDENEMY, 500)
 
-    player = Player(10, [500, 400])
+    player = Player(10)
+    killed_enemies = 0
+    myFont = pygame.font.SysFont("Times New Roman", 50) 
     """groups to hold enemy sprites, and every sprite
     - 'enemies' is used for collision detection and position updates
     - 'all_sprites' is used for rendering"""
@@ -59,25 +61,25 @@ def main():
             #     all_sprites.add(new_enemy)
 
         pressed_keys = pygame.key.get_pressed()
-        if pressed_keys == K_SPACE:
-          shoot_player = (Shoot_player(player.position, (1,2), (1 , 0)))
+        if pressed_keys[K_SPACE] and (counter % 5 == 0):
+          shoot_player = (Shoot_player(player.rect.center, (1,2), (0 , 1), 1))
           ally_shoots.add(shoot_player)
           all_sprites.add(shoot_player)
+          
         
         
         player.update(pressed_keys)
-        ally_shoots.update(shoot_player.direction)
+        ally_shoots.update()
 
         
-        if counter == 0:
-            strategy_reset(grid)
-        elif counter == 1000:
+            
+        if counter % 50 == 0:
             strategy_leftright(grid)
-            updategrid(grid, enemies, all_sprites)
-        elif counter == 1999:
+        if counter == 1999:
             strategy_updown(grid)
-            updategrid(grid, enemies, all_sprites)
         enemies.update()
+        updategrid(grid, enemies, all_sprites)
+        strategy_reset(grid)
 
         screen.fill((0, 0, 0))
 
@@ -92,7 +94,21 @@ def main():
                 player.kill()
                 running = False
 
+        for bullet in ally_shoots:
+          collided_bullet_enemy = pygame.sprite.spritecollideany(bullet, enemies)
+          if collided_bullet_enemy:
+            collided_bullet_enemy.hp -= bullet.hp
+            if collided_bullet_enemy.hp <= 0:
+                collided_bullet_enemy.kill()
+                killed_enemies += 1
+            bullet.kill()
         
+        enemiesDisplay = myFont.render(str(killed_enemies), 10, (255, 255, 255))
+        screen.blit(enemiesDisplay, (20, 5))
+        
+        for i in range(0,player.hp) :
+          pygame.draw.circle(screen, (0, 0, 255), (SCREEN_WIDTH -   20 - (i *20), 25), 5)
+              
 
         pygame.display.flip()
 

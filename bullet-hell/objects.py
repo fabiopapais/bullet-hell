@@ -9,49 +9,36 @@ from pygame.locals import (
     K_DOWN,
     K_LEFT,
     K_RIGHT,
-    K_SPACE,
 )
 gsd = 10 #instead of creating a grid of 1000x800 we creat a grid of 100x80
 class Player(pygame.sprite.Sprite):
-    def __init__(self, HP: int, position : list):
+    def __init__(self, HP: int):
         super(Player, self).__init__()
         self.surf = pygame.Surface((30, 30))
         self.surf.fill((255, 255, 255))
         self.rect = self.surf.get_rect(center = (500, 400))
-        self.position = [500, 400]
         self.hp = HP
 
     # Moves the sprite based on keypresses
     def update(self, pressed_keys):
         if pressed_keys[K_UP]:
             self.rect.move_ip(0, -2)
-            self.position[1] -= 2
         if pressed_keys[K_DOWN]:
             self.rect.move_ip(0, 2)
-            self.position[1] += 2
         if pressed_keys[K_LEFT]:
             self.rect.move_ip(-2, 0)
-            self.position[0] -= 2
         if pressed_keys[K_RIGHT]:
             self.rect.move_ip(2, 0)
-            self.position[0] += 2
-
-        if pressed_keys == K_SPACE:
-          shoot_player = (Shoot_player(self.position, (1,2), (1 , 0)))
 
 
         if self.rect.left < 0:
             self.rect.left = 0
-            self.position[0] += 2
         elif self.rect.right > SCREEN_WIDTH:
             self.rect.right = SCREEN_WIDTH
-            self.position[0] -= 2
         if self.rect.top <= 0:
             self.rect.top = 0
-            self.position[1] += 2
         elif self.rect.bottom >= SCREEN_HEIGHT:
             self.rect.bottom = SCREEN_HEIGHT
-            self.position[1] -= 2
             
 
 
@@ -137,23 +124,31 @@ def strategy_square(grid, cordenadas: tuple,velocidades: tuple):
 #     def speed 
             
 class Shoot_player(pygame.sprite.Sprite):
-  def __init__(self, position : list , speed : tuple, direction : tuple):
+  def __init__(self, position : tuple , speed : tuple, direction : tuple, hp : int):
     super(Shoot_player, self).__init__()
     self.surf = pygame.Surface((10, 10))
     self.surf.fill((255, 100, 92))
     self.rect = self.surf.get_rect(center=position)
-    self.positionx = position[0]
-    self.positiony = position[1]
     self.speed = speed
     self.direction = direction
+    self.hp = hp
   
-  def updates(self):
+  def update(self):
     
-      if self.direction == (1, 0):
-          self.rect.move_ip(1, 0)
-      elif self.direction == (-1, 0):
-          self.rect.move_ip(-1, 0)
-      elif self.direction == (0, 1):
-          self.rect.move_ip(0, 1)
-      elif self.direction == (0 , -1):
-          self.rect.move_ip(0, 1)
+    if self.direction == (1, 0):
+        self.rect.move_ip(1, 0)
+    elif self.direction == (-1, 0):
+        self.rect.move_ip(-1, 0)
+    elif self.direction == (0, 1):
+        self.rect.move_ip(0, 1)
+    elif self.direction == (0 , -1):
+        self.rect.move_ip(0, 1)
+    
+    if self.rect.top > SCREEN_HEIGHT:
+        self.kill()
+    elif self.rect.bottom < 0:
+        self.kill()
+    elif self.rect.left > SCREEN_WIDTH:
+        self.kill()
+    elif self.rect.right < 0:
+        self.kill()
