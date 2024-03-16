@@ -59,9 +59,14 @@ def main():
             #     all_sprites.add(new_enemy)
 
         pressed_keys = pygame.key.get_pressed()
+        if pressed_keys == K_SPACE:
+          shoot_player = (Shoot_player(player.position, (1,2), (1 , 0)))
+          ally_shoots.add(shoot_player)
+          all_sprites.add(shoot_player)
+        
         
         player.update(pressed_keys)
-        ally_shoots.update((1,))
+        ally_shoots.update(shoot_player.direction)
 
         
         if counter == 0:
@@ -86,6 +91,8 @@ def main():
             if player.hp <= 0:
                 player.kill()
                 running = False
+
+        
 
         pygame.display.flip()
 
