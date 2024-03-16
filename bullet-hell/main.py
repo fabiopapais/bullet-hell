@@ -38,8 +38,12 @@ def main():
             strategy_updown(5, enemies, all_sprites)
         if player.rect.centerx < 200 and counter%30 == 0:
             strategy_leftright(6, enemies, all_sprites)
-        if INITIAL_HP > player.hp and counter%30 == 0:
+        if player.hp < 3 and counter%30 == 0:
             strategy_square(enemies, all_sprites)
+        if player.rect.centerx > 650 and counter%120 == 0:
+            strategy_guided_square(enemies, all_sprites)
+        if player.hp < 5 and counter%120 == 0:
+            strategy_chase_bullet(enemies, all_sprites, player)
 
         screen.fill((0, 0, 0))
 
