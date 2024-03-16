@@ -9,6 +9,7 @@ from pygame.locals import (
     K_DOWN,
     K_LEFT,
     K_RIGHT,
+    K_SPACE,
 )
 gsd = 10 #instead of creating a grid of 1000x800 we creat a grid of 100x80
 class Player(pygame.sprite.Sprite):
@@ -34,6 +35,10 @@ class Player(pygame.sprite.Sprite):
         if pressed_keys[K_RIGHT]:
             self.rect.move_ip(2, 0)
             self.position[0] += 2
+
+        if pressed_keys == K_SPACE:
+          shoot_player = (Shoot_player(self.position, (1,2), (1 , 0)))
+
 
         if self.rect.left < 0:
             self.rect.left = 0
