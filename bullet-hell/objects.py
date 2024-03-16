@@ -9,6 +9,7 @@ from pygame.locals import (
     K_DOWN,
     K_LEFT,
     K_RIGHT,
+    K_SPACE,
 )
 gsd = 10 #instead of creating a grid of 1000x800 we creat a grid of 100x80
 class Player(pygame.sprite.Sprite):
@@ -37,12 +38,17 @@ class Player(pygame.sprite.Sprite):
 
         if self.rect.left < 0:
             self.rect.left = 0
+            self.position[0] += 2
         elif self.rect.right > SCREEN_WIDTH:
             self.rect.right = SCREEN_WIDTH
+            self.position[0] -= 2
         if self.rect.top <= 0:
             self.rect.top = 0
+            self.position[1] += 2
         elif self.rect.bottom >= SCREEN_HEIGHT:
             self.rect.bottom = SCREEN_HEIGHT
+            self.position[1] -= 2
+            
 
 
 class Enemy(pygame.sprite.Sprite):
@@ -137,12 +143,13 @@ class Shoot_player(pygame.sprite.Sprite):
     self.speed = speed
     self.direction = direction
   
-  def update(self, direction):
-      if direction == (1, 0):
+  def updates(self):
+    
+      if self.direction == (1, 0):
           self.rect.move_ip(1, 0)
-      elif direction == (-1, 0):
+      elif self.direction == (-1, 0):
           self.rect.move_ip(-1, 0)
-      elif direction == (0, 1):
+      elif self.direction == (0, 1):
           self.rect.move_ip(0, 1)
-      elif direction == (0 , -1):
+      elif self.direction == (0 , -1):
           self.rect.move_ip(0, 1)
