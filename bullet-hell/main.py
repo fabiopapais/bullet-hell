@@ -16,8 +16,10 @@ def main():
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
     player = Player(hp=INITIAL_HP, speed=INITIAL_PLAYER_SPEED)
+    playerinvincible = False
+    playerinvincible_counter = 0
 
-    # Grupos de sprites
+    # Grupos de spriteswd
     bullets = pygame.sprite.Group()
     ally_bullets = pygame.sprite.Group()
     all_sprites = pygame.sprite.Group()
@@ -31,9 +33,12 @@ def main():
     running = True
     clock = pygame.time.Clock()
     while running:
+        # é possível controlar o passo do jogo (dificuldade), alterando o mod, allways chose a multiple of 60
+        playerinvincible_counter -= 1
+        if playerinvincible_counter == 0:
+            playerinvincible = False
         counter += 1
-        # é possível controlar o passo do jogo (dificuldade), alterando o mod
-        counter = counter % 500
+        counter = counter % 600
         screen.fill((0, 0, 0))
 
         # Controla fim do programa
@@ -46,7 +51,7 @@ def main():
 
         # controla tiro do player
         if pygame.mouse.get_pressed()[0] and (counter % INITIAL_ALLY_BULLET_COOLDOWN == 0):
-            shoot_player = (AllyBullet(2.3, 1, player_object=player))
+            shoot_player = (AllyBullet(INITIAL_ALLY_BULLET_SPEED, 1, player_object=player))
             ally_bullets.add(shoot_player)
             all_sprites.add(shoot_player)
 
@@ -57,12 +62,12 @@ def main():
         # (usamos o % mod para controlar os intervalos entre a criação de strategies)
         if counter == 2:
             strategy_updown(5, bullets, all_sprites)
-        if player.rect.centerx < 200 and counter % 30 == 0:
+        if  counter % 20 == 0 and 300 <= counter < 600 and player.hp >= INITIAL_HP//3:
             strategy_leftright(6, bullets, all_sprites)
         if player.hp < 3 and counter % 30 == 0:
             strategy_square(bullets, all_sprites)
         if player.rect.centerx > 650 and counter % 120 == 0:
-            strategy_guided_square(bullets, all_sprites)
+            strategy_guided_square(bullets, all_sprites, player)
         if counter % 120 == 0:
             strategy_chase_bullet(bullets, all_sprites, player)
         bullets.update()
@@ -71,10 +76,13 @@ def main():
         collided_enemy = pygame.sprite.spritecollideany(player, bullets)
         if collided_enemy:
             collided_enemy.kill()
-            player.hp -= 1
-            if player.hp <= 0:
-                player.kill()
-                running = False
+            if not playerinvincible:
+                playerinvincible = True
+                player.hp -= 1
+                playerinvincible_counter = INVINCIBILITY_FRAMES
+                if player.hp <= 0:
+                    player.kill()
+                    running = False
 
         # Lógica de colisões com entre tiros inimigos e aliados (TODO: avaliar forma mais eficiente)
         for bullet in ally_bullets:
@@ -98,7 +106,7 @@ def main():
         for entity in all_sprites:
             screen.blit(entity.surf, entity.rect)
         pygame.display.flip()
-        clock.tick(120) # Altera o fps do jogo
+        clock.tick(60) # Altera o fps do jogoa
     pygame.quit()
 
 

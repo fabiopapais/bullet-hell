@@ -25,7 +25,7 @@ def base_coords_generator(interval: int, divide_by: int, padding: int = 60):
 
 def strategy_updown(enemies_quantity, enemies_sprite_group, all_sprite_group):
     base_coords = base_coords_generator(SCREEN_WIDTH, enemies_quantity, 20)
-    base_velocity = (0, 1)
+    base_velocity = (0, 8)
     for coord in base_coords:
         new_enemy = Bullet(hp=1, speed=base_velocity, position=(coord, 0))
         enemies_sprite_group.add(new_enemy)
@@ -36,7 +36,7 @@ def strategy_updown(enemies_quantity, enemies_sprite_group, all_sprite_group):
 
 def strategy_leftright(enemies_quantity, enemies_sprite_group, all_sprite_group):
     base_coords = base_coords_generator(SCREEN_HEIGHT, enemies_quantity, 20)
-    base_velocity = (1, 0)
+    base_velocity = (2, 0)
     for coord in base_coords:
         new_enemy = Bullet(hp=3, speed=base_velocity, position=(0, coord))
         enemies_sprite_group.add(new_enemy)
@@ -48,27 +48,27 @@ def strategy_square(enemies_sprite_group, all_sprite_group):
     coordsY = base_coords_generator(SCREEN_HEIGHT, 2, SCREEN_HEIGHT // 2 - 100)
     coords = [(coordsX[0], coordsY[0]), (coordsX[1], coordsY[0]),
               (coordsX[0], coordsY[1]), (coordsX[1], coordsY[1])]
-    base_vels = ((0, 1), (-1, 0), (1, 0), (0, -1))
+    base_vels = ((0, 2), (-2, 0), (2, 0), (0, -2))
     for i, coord in enumerate(coords):
         new_enemy = Bullet(hp=1, speed=base_vels[i], position=coord)
         enemies_sprite_group.add(new_enemy)
         all_sprite_group.add(new_enemy)
 
 
-def strategy_guided_square(enemies_sprite_group, all_sprite_group):
+def strategy_guided_square(enemies_sprite_group, all_sprite_group, player_object):
     coordsX = base_coords_generator(SCREEN_WIDTH, 2, SCREEN_WIDTH // 2 - 100)
     coordsY = base_coords_generator(SCREEN_HEIGHT, 2, SCREEN_HEIGHT // 2 - 100)
     coords = [(coordsX[0], coordsY[0]), (coordsX[1], coordsY[0]),
               (coordsX[0], coordsY[1]), (coordsX[1], coordsY[1])]
     for i, coord in enumerate(coords):
         new_enemy = GuidedBullet(
-            hp=1, speed=1.3, position=coord, target_position=(500, 400))
+            hp=1, speed=2.6, position=coord, target_position=player_object.rect.center)
         enemies_sprite_group.add(new_enemy)
         all_sprite_group.add(new_enemy)
 
 
 def strategy_chase_bullet(enemies_sprite_group, all_sprite_group, player_object):
-    new_enemy = ChaseBullet(hp=1, speed=1, position=(randrange(
+    new_enemy = ChaseBullet(hp=1, speed=2, position=(randrange(
         0, SCREEN_WIDTH), randrange(0, SCREEN_HEIGHT)), object_to_chase=player_object)
     enemies_sprite_group.add(new_enemy)
     all_sprite_group.add(new_enemy)
