@@ -32,6 +32,7 @@ def main():
     clock = pygame.time.Clock()
     while running:
         counter += 1
+        # é possível controlar o passo do jogo (dificuldade), alterando o mod
         counter = counter % 500
         screen.fill((0, 0, 0))
 
@@ -52,7 +53,8 @@ def main():
         player.update(pygame.key.get_pressed())
         ally_bullets.update()
 
-        # Controla dinâmica de criação de inimigos
+        # Controla dinâmica de criação de inimigos 
+        # (usamos o % mod para controlar os intervalos entre a criação de strategies)
         if counter == 2:
             strategy_updown(5, bullets, all_sprites)
         if player.rect.centerx < 200 and counter % 30 == 0:
@@ -85,7 +87,7 @@ def main():
                     killed_enemies += 1
                 bullet.kill()
 
-        # Atualiza informações mostradas ao usuário
+        # Atualiza informações mostradas ao jogador
         enemiesDisplay = myFont.render(
             str(killed_enemies), 10, (255, 255, 255))
         screen.blit(enemiesDisplay, (20, 5))
@@ -96,7 +98,7 @@ def main():
         for entity in all_sprites:
             screen.blit(entity.surf, entity.rect)
         pygame.display.flip()
-        clock.tick(120)
+        clock.tick(120) # Altera o fps do jogo
     pygame.quit()
 
 
