@@ -1,93 +1,104 @@
 import pygame
+
 from settings import *
-from objects import *
+from objects import Player, AllyBullet
 from strategies import *
-from pygame.locals import (        
-        K_ESCAPE,
-        KEYDOWN,
-        QUIT,
-    )
+
+from pygame.locals import (
+    K_ESCAPE,
+    KEYDOWN,
+    QUIT,
+)
 
 
 def main():
     pygame.init()
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
-    player = Player(HP=INITIAL_HP, speed=INITIAL_SPEED)
-    killed_enemies = 0
-    myFont = pygame.font.SysFont("Times New Roman", 50) 
-    enemies = pygame.sprite.Group()
-    ally_shoots = pygame.sprite.Group()
+    player = Player(hp=INITIAL_HP, speed=INITIAL_PLAYER_SPEED)
+
+    # Grupos de sprites
+    bullets = pygame.sprite.Group()
+    ally_bullets = pygame.sprite.Group()
     all_sprites = pygame.sprite.Group()
     all_sprites.add(player)
+
+    # Informações mostradas ao jogador
+    killed_enemies = 0
+    myFont = pygame.font.SysFont("Times New Roman", 50)
 
     counter = 0
     running = True
     clock = pygame.time.Clock()
     while running:
-        counter += 1 #para o teste do strategy
+        counter += 1
         counter = counter % 500
+        screen.fill((0, 0, 0))
+
+        # Controla fim do programa
         for event in pygame.event.get():
             if event.type == KEYDOWN:
                 if event.key == K_ESCAPE:
                     running = False
-
             elif event.type == QUIT:
                 running = False
-        
-        pressed_keys = pygame.key.get_pressed()
 
-        if pygame.mouse.get_pressed()[0] and (counter % 5 == 0):
-            shoot_player = (Shoot_player(player.rect.center, 2.3, 1, player_object=player))
-            ally_shoots.add(shoot_player)
+        # controla tiro do player
+        if pygame.mouse.get_pressed()[0] and (counter % INITIAL_ALLY_BULLET_COOLDOWN == 0):
+            shoot_player = (AllyBullet(2.3, 1, player_object=player))
+            ally_bullets.add(shoot_player)
             all_sprites.add(shoot_player)
-        
-        player.update(pressed_keys)
-        ally_shoots.update()
 
-        # controla criação de inimigos
+        player.update(pygame.key.get_pressed())
+        ally_bullets.update()
+
+        # Controla dinâmica de criação de inimigos
         if counter == 2:
-            strategy_updown(5, enemies, all_sprites)
-        if player.rect.centerx < 200 and counter%30 == 0:
-            strategy_leftright(6, enemies, all_sprites)
-        if player.hp < 3 and counter%30 == 0:
-            strategy_square(enemies, all_sprites)
-        if player.rect.centerx > 650 and counter%120 == 0:
-            strategy_guided_square(enemies, all_sprites)
-        if counter%120 == 0:
-            strategy_chase_bullet(enemies, all_sprites, player)
-        enemies.update()
+            strategy_updown(5, bullets, all_sprites)
+        if player.rect.centerx < 200 and counter % 30 == 0:
+            strategy_leftright(6, bullets, all_sprites)
+        if player.hp < 3 and counter % 30 == 0:
+            strategy_square(bullets, all_sprites)
+        if player.rect.centerx > 650 and counter % 120 == 0:
+            strategy_guided_square(bullets, all_sprites)
+        if counter % 120 == 0:
+            strategy_chase_bullet(bullets, all_sprites, player)
+        bullets.update()
 
-        screen.fill((0, 0, 0))
-
-        for entity in all_sprites:
-            screen.blit(entity.surf, entity.rect)
-
-        collided_enemy = pygame.sprite.spritecollideany(player, enemies)
+        # Lógica de colisões entre player e tiros inimigos
+        collided_enemy = pygame.sprite.spritecollideany(player, bullets)
         if collided_enemy:
             collided_enemy.kill()
             player.hp -= 1
             if player.hp <= 0:
                 player.kill()
                 running = False
-        for bullet in ally_shoots:
-            collided_bullet_enemy = pygame.sprite.spritecollideany(bullet, enemies)
+
+        # Lógica de colisões com entre tiros inimigos e aliados (TODO: avaliar forma mais eficiente)
+        for bullet in ally_bullets:
+            collided_bullet_enemy = pygame.sprite.spritecollideany(
+                bullet, bullets)
             if collided_bullet_enemy:
                 collided_bullet_enemy.hp -= bullet.hp
                 if collided_bullet_enemy.hp <= 0:
                     collided_bullet_enemy.kill()
                     killed_enemies += 1
                 bullet.kill()
-        
-        enemiesDisplay = myFont.render(str(killed_enemies), 10, (255, 255, 255))
-        screen.blit(enemiesDisplay, (20, 5))
-        
-        for i in range(0,player.hp) :
-          pygame.draw.circle(screen, (0, 0, 255), (SCREEN_WIDTH -   20 - (i *20), 25), 5)
 
+        # Atualiza informações mostradas ao usuário
+        enemiesDisplay = myFont.render(
+            str(killed_enemies), 10, (255, 255, 255))
+        screen.blit(enemiesDisplay, (20, 5))
+        for i in range(0, player.hp):
+            pygame.draw.circle(screen, (0, 0, 255),
+                               (SCREEN_WIDTH - 20 - (i * 20), 25), 5)
+
+        for entity in all_sprites:
+            screen.blit(entity.surf, entity.rect)
         pygame.display.flip()
         clock.tick(120)
     pygame.quit()
+
 
 if __name__ == "__main__":
     main()
