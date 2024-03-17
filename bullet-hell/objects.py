@@ -5,35 +5,42 @@ from math import sqrt
 from settings import *
 
 from pygame.locals import (
-    K_UP,
-    K_DOWN,
-    K_LEFT,
-    K_RIGHT,
+    K_w,
+    K_s,
+    K_a,
+    K_d,
 )
 
+
 class Player(pygame.sprite.Sprite):
-    def __init__(self, HP: int):
+    def __init__(self, HP: int, speed:int=2):
         super(Player, self).__init__()
-        self.surf = pygame.Surface((30, 30))
-        self.surf.fill((255, 255, 255))
-        self.rect = self.surf.get_rect(center = (500, 400))
+        self.surf = pygame.Surface((40, 40), pygame.SRCALPHA)
+        pygame.draw.polygon(self.surf, pygame.Color('steelblue2'), [(0, 0), (0, 40), (40, 20)])
+        self.rect = self.surf.get_rect(center=(500, 400))
         self.hp = HP
-        self.position = (500, 400)
+        self.speed = speed
+
+        # for Player rotation
+        self.pos = pygame.Vector2(self.rect.center)
+        self.orig_surf = self.surf
 
     # Moves the sprite based on keypresses
     def update(self, pressed_keys):
-        if pressed_keys[K_UP]:
+        # for Player rotation
+        self.rotate()
+        
+        if pressed_keys[K_w]:
             self.rect.move_ip(0, -2)
-            self.position = (self.position[0] + 0, self.position[1] -2)
-        if pressed_keys[K_DOWN]:
+            
+        if pressed_keys[K_s]:
             self.rect.move_ip(0, 2)
-            self.position = (self.position[0] + 0,self.position[1] + 2)
-        if pressed_keys[K_LEFT]:
+            
+        if pressed_keys[K_a]:
             self.rect.move_ip(-2, 0)
-            self.position = (self.position[0] -2,self.position[1] + 0)
-        if pressed_keys[K_RIGHT]:
+            
+        if pressed_keys[K_d]:
             self.rect.move_ip(2, 0)
-            self.position = (self.position[0] + 2,self.position[1] + 0)
 
         if self.rect.left < 0:
             self.rect.left = 0
@@ -43,12 +50,23 @@ class Player(pygame.sprite.Sprite):
             self.rect.top = 0
         elif self.rect.bottom >= SCREEN_HEIGHT:
             self.rect.bottom = SCREEN_HEIGHT
+        
+        self.pos = pygame.Vector2(self.rect.center)
+        
+    def rotate(self):
+        direction = pygame.mouse.get_pos() - self.pos
+        
+        radius, angle = direction.as_polar()
+        
+        self.surf = pygame.transform.rotate(self.orig_surf, -angle)
+        
+        self.rect = self.surf.get_rect(center=self.rect.center)
 
 
 class Enemy(pygame.sprite.Sprite):
     def __init__(self, HP: int, speed: tuple, position: tuple):
         super(Enemy, self).__init__()
-        self.surf = pygame.Surface((20, 20)) #tamanho do quadrado
+        self.surf = pygame.Surface((20, 20))  # tamanho do quadrado
         self.surf.fill((255, 0, 0))
         self.hp = HP
         self.xvelocity = speed[0]
@@ -73,7 +91,7 @@ class Enemy(pygame.sprite.Sprite):
 class GuidedBullet(pygame.sprite.Sprite):
     def __init__(self, HP: int, speed: float, position: tuple, target_position: tuple):
         super(GuidedBullet, self).__init__()
-        self.surf = pygame.Surface((20, 20)) #tamanho do quadrado
+        self.surf = pygame.Surface((20, 20))  # tamanho do quadrado
         self.surf.fill((255, 125, 0))
         self.hp = HP
         self.rect = self.surf.get_rect(
@@ -83,22 +101,23 @@ class GuidedBullet(pygame.sprite.Sprite):
         # convertemos as posições em vetores
         self.position = pygame.Vector2(position)
         self.target_position = pygame.Vector2(target_position)
-        # este método transforma o vetor resultante das duas posições em um vetor 
-        # com distância (magnitude) 1, mantendo sua direção. 
-        self.direction = (self.target_position - self.position).normalize() 
-        
+        # este método transforma o vetor resultante das duas posições em um vetor
+        # com distância (magnitude) 1, mantendo sua direção.
+        self.direction = (self.target_position - self.position).normalize()
 
     def update(self):
         # Move o inimigo na direção especificada com determinada velocidade
-        self.position += self.direction * self.speed # multiplica o vetor normalizado pela velocidade desejada e soma ele à posição
-        self.rect.center = self.position # assinala a posição ao rect, efetuando a mudança na posição do sprite
+        # multiplica o vetor normalizado pela velocidade desejada e soma ele à posição
+        self.position += self.direction * self.speed
+        # assinala a posição ao rect, efetuando a mudança na posição do sprite
+        self.rect.center = self.position
 
 
 # um tipo de inimigo que segue o player, dado o objeto do player
 class ChaseBullet(pygame.sprite.Sprite):
     def __init__(self, HP: int, speed: float, position: tuple, player_object: object):
         super(ChaseBullet, self).__init__()
-        self.surf = pygame.Surface((20, 20)) #tamanho do quadrado
+        self.surf = pygame.Surface((20, 20))  # tamanho do quadrado
         self.surf.fill((255, 0, 130))
         self.hp = HP
         self.rect = self.surf.get_rect(
@@ -106,66 +125,40 @@ class ChaseBullet(pygame.sprite.Sprite):
         )
         self.speed = speed
         self.position = pygame.Vector2(position)
-        self.player_object = player_object # assim podemos acessar a posição em tempo real do player
+        # assim podemos acessar a posição em tempo real do player
+        self.player_object = player_object
 
     def update(self):
-        # semelhante ao GuidedBullet, porém aqui calculamos a nova direção a cada update() 
-        direction = (pygame.Vector2(self.player_object.position) - self.position).normalize()
+        # semelhante ao GuidedBullet, porém aqui calculamos a nova direção a cada update()
+        direction = (pygame.Vector2(self.player_object.pos) -
+                    self.position).normalize()
         # Move o inimigo na direção especificada com determinada velocidade
         self.position += direction * self.speed
         self.rect.center = self.position
 
 
-# essa função facilita a criação de divisões e coordenadas pelo mapa, substituindo a lógica de grid
-# cria 'divide_by' divisões no intervalo [0 a 'interval'] especificado, 
-# adicionando um 'padding' aos lados
-# exemplo: interval = SCREEN_WIDTH = 1000, divide_by = 5, padding = 60
-# retorna [60, 280, 500, 720, 940]
-def base_coords_generator(interval:int, divide_by:int, padding:int=60):
-    division_size = (interval - padding*2) / (divide_by - 1)
-    base_coords = []
-    for division in range(0, divide_by):
-        base_coords.append(int(division_size*division + padding))
-    return base_coords
+class Shoot_player(pygame.sprite.Sprite):
+    def __init__(self, position: tuple, speed: int, hp: int, player_object: object):
+        super(Shoot_player, self).__init__()
+        self.surf = pygame.Surface((10, 10))
+        self.surf.fill((255, 100, 92))
+        self.rect = self.surf.get_rect(center=position)
+        self.speed = speed
+        self.direction = (pygame.mouse.get_pos() - player_object.pos).normalize()
+        self.hp = hp
+        self.position = pygame.Vector2(player_object.pos + self.direction * 25) # se quiser mudar o spawn do tiro é aqui
 
-# cria a quantidade de inimigos desejada dispostos horizontalmente na parte de cima do mapa
-def strategy_updown(enemies_quantity, enemies_sprite_group, all_sprite_group):
-    base_coords = base_coords_generator(SCREEN_WIDTH, enemies_quantity, 20)
-    base_velocity = (0,1)
-    for coord in base_coords:
-        new_enemy = Enemy(HP=1, speed=base_velocity, position=(coord, 0))
-        enemies_sprite_group.add(new_enemy)
-        all_sprite_group.add(new_enemy)
+    def update(self):
 
-# cria a quantidade de inimigos desejada dispostos verticalmente na parte da esquerda do mapa
-def strategy_leftright(enemies_quantity, enemies_sprite_group, all_sprite_group):
-    base_coords = base_coords_generator(SCREEN_HEIGHT, enemies_quantity, 20)
-    base_velocity = (1,0)
-    for coord in base_coords:
-        new_enemy = Enemy(HP=1, speed=base_velocity, position=(0, coord))
-        enemies_sprite_group.add(new_enemy)
-        all_sprite_group.add(new_enemy)
+        self.position += self.direction * self.speed
+        # assinala a posição ao rect, efetuando a mudança na posição do sprite
+        self.rect.center = self.position
 
-def strategy_square(enemies_sprite_group, all_sprite_group):
-    coordsX = base_coords_generator(SCREEN_WIDTH, 2, SCREEN_WIDTH // 2 - 100)
-    coordsY = base_coords_generator(SCREEN_HEIGHT, 2, SCREEN_HEIGHT // 2 - 100)
-    coords = [(coordsX[0], coordsY[0]), (coordsX[1], coordsY[0]), (coordsX[0], coordsY[1]), (coordsX[1], coordsY[1])]
-    base_vels = ((0,1),(-1,0),(1,0),(0,-1))
-    for i, coord in enumerate(coords):
-            new_enemy = Enemy(HP=1, speed=base_vels[i], position=coord)
-            enemies_sprite_group.add(new_enemy)
-            all_sprite_group.add(new_enemy)
-
-def strategy_guided_square(enemies_sprite_group, all_sprite_group):
-    coordsX = base_coords_generator(SCREEN_WIDTH, 2, SCREEN_WIDTH // 2 - 100)
-    coordsY = base_coords_generator(SCREEN_HEIGHT, 2, SCREEN_HEIGHT // 2 - 100)
-    coords = [(coordsX[0], coordsY[0]), (coordsX[1], coordsY[0]), (coordsX[0], coordsY[1]), (coordsX[1], coordsY[1])]
-    for i, coord in enumerate(coords):
-            new_enemy = GuidedBullet(HP=1, speed=1.3, position=coord, target_position=(500, 400))
-            enemies_sprite_group.add(new_enemy)
-            all_sprite_group.add(new_enemy)
-
-def strategy_chase_bullet(enemies_sprite_group, all_sprite_group, player_object):
-    new_enemy = ChaseBullet(HP=1, speed=1, position=(randrange(0, SCREEN_WIDTH), randrange(0, SCREEN_HEIGHT)), player_object=player_object)
-    enemies_sprite_group.add(new_enemy)
-    all_sprite_group.add(new_enemy)
+        if self.rect.top > SCREEN_HEIGHT:
+            self.kill()
+        elif self.rect.bottom < 0:
+            self.kill()
+        elif self.rect.left > SCREEN_WIDTH:
+            self.kill()
+        elif self.rect.right < 0:
+            self.kill()
