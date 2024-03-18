@@ -2,7 +2,8 @@ import pygame
 
 from settings import (
     SCREEN_HEIGHT,
-    SCREEN_WIDTH
+    SCREEN_WIDTH,
+    FPS,
 )
 
 from pygame.locals import (
@@ -38,12 +39,18 @@ class Player(pygame.sprite.Sprite):
             center=(SCREEN_WIDTH//2, SCREEN_HEIGHT//2))
         self.hp = hp
         self.speed = speed
+        self.can_shoot = False
+        self.last_shot = -1
 
         # armazena a posição como vetor
         self.position = pygame.Vector2(self.rect.center)
         self.original_surf = self.surf  # cópia do surf para auxiliar rotação
+        self.atkspd = 2
 
-    def update(self, pressed_keys):
+    def set_atkspd(self, inc):
+        self.atkspd += inc
+
+    def update(self, pressed_keys, sist_counter):
         """
         Movimenta o player na horizontal/vertical e faz rotação baseada no mouse.
 
@@ -72,8 +79,16 @@ class Player(pygame.sprite.Sprite):
         elif self.rect.bottom >= SCREEN_HEIGHT:
             self.rect.bottom = SCREEN_HEIGHT
 
+        if self.last_shot > sist_counter:
+            self.last_shot *= -1
+        if sist_counter - self.last_shot > 1/self.atkspd*FPS:
+            self.can_shoot = True
+        else:
+            self.can_shoot = False
         # assinala posição rect à propriedade pos
         self.position = pygame.Vector2(self.rect.center)
+
+
 
     # função que realiza rotação com base na posição do mouse
     def rotate(self):
@@ -260,3 +275,13 @@ class AllyBullet(pygame.sprite.Sprite):
             self.kill()
         elif self.rect.right < 0:
             self.kill()
+
+class Collectable(pygame.sprite.Sprite):
+    def __init__(self, position: tuple, radius: int, color: tuple) -> None:
+        super(Collectable, self).__init__()
+        self.surf = pygame.Surface((radius, radius))
+        self.surf.fill(color)
+        self.color = color
+        self.rect = self.surf.get_rect(
+            center=position
+        )
