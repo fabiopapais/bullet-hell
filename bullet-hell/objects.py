@@ -22,7 +22,7 @@ class Player(pygame.sprite.Sprite):
     na horizontal, vertical e rotação do player (com base na posição do mouse)
     """
 
-    def __init__(self, hp: int, speed: int = 2):
+    def __init__(self, hp: int, speed: int = 2, atkspd = int):
         """
         Inicializa a classe.
 
@@ -45,7 +45,7 @@ class Player(pygame.sprite.Sprite):
         # armazena a posição como vetor
         self.position = pygame.Vector2(self.rect.center)
         self.original_surf = self.surf  # cópia do surf para auxiliar rotação
-        self.atkspd = 2
+        self.atkspd = atkspd
 
     def set_atkspd(self, inc):
         self.atkspd += inc
@@ -108,7 +108,7 @@ class Bullet(pygame.sprite.Sprite):
     velocidade até atingir o player, ser destruído ou chegar ao fim do mapa
     """
 
-    def __init__(self, hp: int, speed: tuple, position: tuple):
+    def __init__(self, hp: int, speed: tuple, size: int, position: tuple):
         """
         Inicializa a classe.
 
@@ -118,7 +118,7 @@ class Bullet(pygame.sprite.Sprite):
             position: posição em (x,y) onde o tiro será spawnado
         """
         super(Bullet, self).__init__()
-        self.surf = pygame.Surface((20, 20))
+        self.surf = pygame.Surface((size, size))
         self.surf.fill((255, 0, 0))
         self.rect = self.surf.get_rect(
             center=position
@@ -183,6 +183,15 @@ class GuidedBullet(pygame.sprite.Sprite):
         self.position += self.direction * self.speed
         # assinala a posição ao rect, efetuando a mudança na posição do sprite
         self.rect.center = self.position
+    
+        if self.rect.right < 0:
+                self.kill()
+        elif self.rect.left > SCREEN_WIDTH:
+            self.kill()
+        elif self.rect.bottom < 0:
+            self.kill()
+        elif self.rect.top > SCREEN_HEIGHT:
+            self.kill()
 
 
 class ChaseBullet(pygame.sprite.Sprite):
@@ -224,6 +233,15 @@ class ChaseBullet(pygame.sprite.Sprite):
         # Move o inimigo na direção especificada com determinada velocidade
         self.position += direction * self.speed
         self.rect.center = self.position
+
+        if self.rect.right < 0:
+            self.kill()
+        elif self.rect.left > SCREEN_WIDTH:
+            self.kill()
+        elif self.rect.bottom < 0:
+            self.kill()
+        elif self.rect.top > SCREEN_HEIGHT:
+            self.kill()
 
 
 class AllyBullet(pygame.sprite.Sprite):

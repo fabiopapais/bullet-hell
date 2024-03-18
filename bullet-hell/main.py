@@ -16,7 +16,7 @@ def main():
     pygame.init()
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
-    player = Player(hp=INITIAL_HP, speed=INITIAL_PLAYER_SPEED)
+    player = Player(hp=INITIAL_HP, speed=INITIAL_PLAYER_SPEED, atkspd=INITIAL_ATKSP)
     playerinvincible = False
     playerinvincible_counter = 0
 
@@ -28,11 +28,10 @@ def main():
     collectables = pygame.sprite.Group()
     # Informações mostradas ao jogador
     killed_enemies = 0
-    myFont = pygame.font.SysFont("Times New Roman", 50)
+    myFont = pygame.font.SysFont("Comic sans", 50)
     alliedbulletspeed = INITIAL_ALLY_BULLET_SPEED
     
     counter = 0
-    atkspd_counter = 0
     running = True
     clock = pygame.time.Clock()
     while running:
@@ -65,15 +64,19 @@ def main():
         # Controla dinâmica de criação de inimigos 
         # (usamos o % mod para controlar os intervalos entre a criação de strategies)
         if counter%200 == 0:
-            strategy_updown(5, bullets, all_sprites)
-        if  counter % 20 == 0 and 600 <= counter < 1200 and player.hp >= INITIAL_HP//3 and killed_enemies > 50:
-            strategy_leftright(6, bullets, all_sprites)
+            strategy_updown(5, bullets, all_sprites, 20)
+        if  counter % 20 == 0 and 600 <= counter < 1200 and player.hp >= INITIAL_HP//3 and 100 > killed_enemies > 50:
+            strategy_leftright(6, bullets, all_sprites, 20)
         if player.hp < 3 and counter % 30 == 0:
-            strategy_square(bullets, all_sprites)
+            strategy_square(bullets, all_sprites, 20)
         if counter % 240 == 0:
             strategy_guided_square(bullets, all_sprites, player)
         if counter % 120 == 0:
             strategy_chase_bullet(bullets, all_sprites, player)
+        if counter%20 == 0 and killed_enemies > 100 and 300<counter<600:    
+            diagonal(6, bullets, all_sprites, 15)
+        # strategy_guided_squaretop(bullets, all_sprites, player)
+        # strategy_guided_squarebottom(bullets, all_sprites, player)
         bullets.update()
         # Lógica de spawn de coletável
         if counter == 1:
@@ -86,10 +89,10 @@ def main():
         if collided_collectable:
             if collided_collectable.color == (0,0,255):
                 player.hp += 1
-            elif collided_collectable.color == (255,255,0):
+            elif collided_collectable.color == ("#FAEC5D"):
                 player.set_atkspd(1)
-                pass
-            elif collided_collectable.color == (255,165,0) and alliedbulletspeed < 10:
+
+            elif collided_collectable.color == ("#D164FA") and alliedbulletspeed < 10:
                 alliedbulletspeed += 1
             collided_collectable.kill()
 
@@ -112,7 +115,7 @@ def main():
                 collided_bullet_enemy.hp -= A_bullet.hp
                 if collided_bullet_enemy.hp <= 0:
                     if randint(0,99)in range(COLLECTABLE_SPAWN_CHANCE):
-                        colorlist = [(255,255,0),(255,165,0)] # hp, atksp, bulletspeeda
+                        colorlist = [("#FAEC5D"),("#D164FA")] # hp, atksp, bulletspeeda
                         col = Collectable(((collided_bullet_enemy.rect.center)),COLLECTABLE_RADIUS,choice(colorlist))
                         collectables.add(col)
                         all_sprites.add(col)
