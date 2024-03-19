@@ -13,10 +13,12 @@ from pygame.locals import (
 
 def main():
     pygame.init()
-    screen = pygame.display.set_mode((settings.SCREEN_WIDTH, settings.SCREEN_HEIGHT), pygame.RESIZABLE)
-    pygame.display.set_caption('Geometry Wars') 
+    screen = pygame.display.set_mode(
+        (settings.SCREEN_WIDTH, settings.SCREEN_HEIGHT), pygame.RESIZABLE)
+    pygame.display.set_caption('Geometry Wars')
 
-    player = Player(hp=settings.INITIAL_HP, speed=settings.INITIAL_PLAYER_SPEED)
+    player = Player(hp=settings.INITIAL_HP,
+                    speed=settings.INITIAL_PLAYER_SPEED)
     playerinvincible = False
     playerinvincible_counter = 0
 
@@ -36,7 +38,6 @@ def main():
     while running:
         # handle screen resizing
         current_screen_width, current_screen_height = pygame.display.get_surface().get_size()
-        
 
         playerinvincible_counter -= 1
         if playerinvincible_counter == 0:
@@ -50,9 +51,11 @@ def main():
             # Controla redimensionamento da tela
             current_screen_width, current_screen_height = screen.get_size()
             if current_screen_width < settings.MIN_SCREEN_WIDTH or current_screen_height < settings.MIN_SCREEN_HEIGHT:
-                screen = pygame.display.set_mode((max(settings.MIN_SCREEN_WIDTH, current_screen_width), max(settings.MIN_SCREEN_HEIGHT, current_screen_height)), pygame.RESIZABLE)
+                screen = pygame.display.set_mode((max(settings.MIN_SCREEN_WIDTH, current_screen_width), max(
+                    settings.MIN_SCREEN_HEIGHT, current_screen_height)), pygame.RESIZABLE)
             if current_screen_width > settings.MAX_SCREEN_WIDTH or current_screen_height > settings.MAX_SCREEN_HEIGHT:
-                screen = pygame.display.set_mode((min(settings.MIN_SCREEN_WIDTH, current_screen_width), min(settings.MIN_SCREEN_HEIGHT, current_screen_height)), pygame.RESIZABLE)
+                screen = pygame.display.set_mode((min(settings.MIN_SCREEN_WIDTH, current_screen_width), min(
+                    settings.MIN_SCREEN_HEIGHT, current_screen_height)), pygame.RESIZABLE)
             settings.SCREEN_WIDTH = screen.get_size()[0]
             settings.SCREEN_HEIGHT = screen.get_size()[1]
             # Controla fim do programa
@@ -64,18 +67,19 @@ def main():
 
         # controla tiro do player
         if pygame.mouse.get_pressed()[0] and (counter % settings.INITIAL_ALLY_BULLET_COOLDOWN == 0):
-            shoot_player = (AllyBullet(settings.INITIAL_ALLY_BULLET_SPEED, 1, player_object=player))
+            shoot_player = (AllyBullet(
+                settings.INITIAL_ALLY_BULLET_SPEED, 1, player_object=player))
             ally_bullets.add(shoot_player)
             all_sprites.add(shoot_player)
 
         player.update(pygame.key.get_pressed())
         ally_bullets.update()
 
-        # Controla dinâmica de criação de inimigos 
+        # Controla dinâmica de criação de inimigos
         # (usamos o % mod para controlar os intervalos entre a criação de strategies)
         if counter == 2:
             strategy_updown(5, bullets, all_sprites)
-        if  counter % 20 == 0 and 300 <= counter < 600 and player.hp >= settings.INITIAL_HP//3:
+        if counter % 20 == 0 and 300 <= counter < 600 and player.hp >= settings.INITIAL_HP//3:
             strategy_leftright(6, bullets, all_sprites)
         if player.hp < 3 and counter % 30 == 0:
             strategy_square(bullets, all_sprites)
@@ -119,7 +123,7 @@ def main():
         for entity in all_sprites:
             screen.blit(entity.surf, entity.rect)
         pygame.display.flip()
-        clock.tick(60) # Altera o fps do jogo
+        clock.tick(60)  # Altera o fps do jogo
     pygame.quit()
 
 
