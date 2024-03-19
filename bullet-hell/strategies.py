@@ -24,7 +24,8 @@ def base_coords_generator(interval: int, divide_by: int, padding: int = 60):
 
 
 def strategy_updown(enemies_quantity, enemies_sprite_group, all_sprite_group):
-    base_coords = base_coords_generator(settings.SCREEN_WIDTH, enemies_quantity, 20)
+    base_coords = base_coords_generator(
+        settings.SCREEN_WIDTH, enemies_quantity, 20)
     base_velocity = (0, 8)
     for coord in base_coords:
         new_enemy = Bullet(hp=1, speed=base_velocity, position=(coord, 0))
@@ -35,7 +36,8 @@ def strategy_updown(enemies_quantity, enemies_sprite_group, all_sprite_group):
 
 
 def strategy_leftright(enemies_quantity, enemies_sprite_group, all_sprite_group):
-    base_coords = base_coords_generator(settings.SCREEN_HEIGHT, enemies_quantity, 20)
+    base_coords = base_coords_generator(
+        settings.SCREEN_HEIGHT, enemies_quantity, 20)
     base_velocity = (2, 0)
     for coord in base_coords:
         new_enemy = Bullet(hp=3, speed=base_velocity, position=(0, coord))
@@ -44,8 +46,10 @@ def strategy_leftright(enemies_quantity, enemies_sprite_group, all_sprite_group)
 
 
 def strategy_square(enemies_sprite_group, all_sprite_group):
-    coordsX = base_coords_generator(settings.SCREEN_WIDTH, 2, settings.SCREEN_WIDTH // 2 - 100)
-    coordsY = base_coords_generator(settings.SCREEN_HEIGHT, 2, settings.SCREEN_HEIGHT // 2 - 100)
+    coordsX = base_coords_generator(
+        settings.SCREEN_WIDTH, 2, settings.SCREEN_WIDTH // 2 - 100)
+    coordsY = base_coords_generator(
+        settings.SCREEN_HEIGHT, 2, settings.SCREEN_HEIGHT // 2 - 100)
     coords = [(coordsX[0], coordsY[0]), (coordsX[1], coordsY[0]),
               (coordsX[0], coordsY[1]), (coordsX[1], coordsY[1])]
     base_vels = ((0, 2), (-2, 0), (2, 0), (0, -2))
@@ -56,8 +60,10 @@ def strategy_square(enemies_sprite_group, all_sprite_group):
 
 
 def strategy_guided_square(enemies_sprite_group, all_sprite_group, player_object):
-    coordsX = base_coords_generator(settings.SCREEN_WIDTH, 2, settings.SCREEN_WIDTH // 2 - 100)
-    coordsY = base_coords_generator(settings.SCREEN_HEIGHT, 2, settings.SCREEN_HEIGHT // 2 - 100)
+    coordsX = base_coords_generator(
+        settings.SCREEN_WIDTH, 2, settings.SCREEN_WIDTH // 2 - 100)
+    coordsY = base_coords_generator(
+        settings.SCREEN_HEIGHT, 2, settings.SCREEN_HEIGHT // 2 - 100)
     coords = [(coordsX[0], coordsY[0]), (coordsX[1], coordsY[0]),
               (coordsX[0], coordsY[1]), (coordsX[1], coordsY[1])]
     for i, coord in enumerate(coords):
