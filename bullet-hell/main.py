@@ -28,7 +28,7 @@ def main():
     collectables = pygame.sprite.Group()
     # Informações mostradas ao jogador
     killed_enemies = 0
-    myFont = pygame.font.SysFont("Comic sans", 50)
+    myFont = pygame.font.SysFont("Open Sans", 50)
     alliedbulletspeed = INITIAL_ALLY_BULLET_SPEED
     
     counter = 0
@@ -41,7 +41,7 @@ def main():
             playerinvincible = False
         counter += 1
         counter = counter % 1200
-        screen.fill((0, 0, 0))
+        screen.fill((background_color))
 
         # Controla fim do programa
         for event in pygame.event.get():
@@ -80,19 +80,19 @@ def main():
         bullets.update()
         # Lógica de spawn de coletável
         if counter == 1:
-            col = Collectable(((randint(0,SCREEN_WIDTH-COLLECTABLE_RADIUS),randint(0,SCREEN_HEIGHT-COLLECTABLE_RADIUS))),COLLECTABLE_RADIUS,(0,0,255))
+            col = Collectable(((randint(0,SCREEN_WIDTH-COLLECTABLE_RADIUS),randint(0,SCREEN_HEIGHT-COLLECTABLE_RADIUS))),COLLECTABLE_RADIUS,(green))
             collectables.add(col)
             all_sprites.add(col)
 
         # Lógica de colisões entre player e coletaveis
         collided_collectable = pygame.sprite.spritecollideany(player, collectables)
         if collided_collectable:
-            if collided_collectable.color == (0,0,255):
+            if collided_collectable.color == (green):
                 player.hp += 1
-            elif collided_collectable.color == ("#FAEC5D"):
+            elif collided_collectable.color == (blue):
                 player.set_atkspd(1)
 
-            elif collided_collectable.color == ("#D164FA") and alliedbulletspeed < 10:
+            elif collided_collectable.color == (yellow) and alliedbulletspeed < 10:
                 alliedbulletspeed += 1
             collided_collectable.kill()
 
@@ -115,7 +115,7 @@ def main():
                 collided_bullet_enemy.hp -= A_bullet.hp
                 if collided_bullet_enemy.hp <= 0:
                     if randint(0,99)in range(COLLECTABLE_SPAWN_CHANCE):
-                        colorlist = [("#FAEC5D"),("#D164FA")] # hp, atksp, bulletspeeda
+                        colorlist = [(blue),(yellow)] # hp, atksp, bulletspeeda
                         col = Collectable(((collided_bullet_enemy.rect.center)),COLLECTABLE_RADIUS,choice(colorlist))
                         collectables.add(col)
                         all_sprites.add(col)
@@ -125,10 +125,10 @@ def main():
 
         # Atualiza informações mostradas ao jogador
         enemiesDisplay = myFont.render(
-            str(killed_enemies), 10, (255, 255, 255))
+            str(killed_enemies), 10, (white))
         screen.blit(enemiesDisplay, (20, 5))
         for i in range(0, player.hp):
-            pygame.draw.circle(screen, (0, 0, 255),
+            pygame.draw.circle(screen, (green),
                                (SCREEN_WIDTH - 20 - (i * 20), 25), 5)
 
         for entity in all_sprites:
