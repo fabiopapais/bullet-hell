@@ -1,6 +1,6 @@
 from random import randrange
 
-from settings import *
+import settings
 from objects import *
 
 
@@ -9,7 +9,7 @@ def base_coords_generator(interval: int, divide_by: int, padding: int = 60):
     Facilita a criação de divisões e coordenadas pelo mapa.
 
     Ela cria 'divide_by' divisões no intervalo [0 a 'interval'] especificado, adicionando um 'padding' 
-    aos lados. Exemplo: chamar a função com interval = SCREEN_WIDTH = 1000, divide_by = 5, padding = 60
+    aos lados. Exemplo: chamar a função com interval = settings.SCREEN_WIDTH = 1000, divide_by = 5, padding = 60
     retorna [60, 280, 500, 720, 940]
     """
     division_size = (interval - padding*2) / \
@@ -24,7 +24,7 @@ def base_coords_generator(interval: int, divide_by: int, padding: int = 60):
 
 
 def strategy_updown(enemies_quantity, enemies_sprite_group, all_sprite_group):
-    base_coords = base_coords_generator(SCREEN_WIDTH, enemies_quantity, 20)
+    base_coords = base_coords_generator(settings.SCREEN_WIDTH, enemies_quantity, 20)
     base_velocity = (0, 8)
     for coord in base_coords:
         new_enemy = Bullet(hp=1, speed=base_velocity, position=(coord, 0))
@@ -35,7 +35,7 @@ def strategy_updown(enemies_quantity, enemies_sprite_group, all_sprite_group):
 
 
 def strategy_leftright(enemies_quantity, enemies_sprite_group, all_sprite_group):
-    base_coords = base_coords_generator(SCREEN_HEIGHT, enemies_quantity, 20)
+    base_coords = base_coords_generator(settings.SCREEN_HEIGHT, enemies_quantity, 20)
     base_velocity = (2, 0)
     for coord in base_coords:
         new_enemy = Bullet(hp=3, speed=base_velocity, position=(0, coord))
@@ -44,8 +44,8 @@ def strategy_leftright(enemies_quantity, enemies_sprite_group, all_sprite_group)
 
 
 def strategy_square(enemies_sprite_group, all_sprite_group):
-    coordsX = base_coords_generator(SCREEN_WIDTH, 2, SCREEN_WIDTH // 2 - 100)
-    coordsY = base_coords_generator(SCREEN_HEIGHT, 2, SCREEN_HEIGHT // 2 - 100)
+    coordsX = base_coords_generator(settings.SCREEN_WIDTH, 2, settings.SCREEN_WIDTH // 2 - 100)
+    coordsY = base_coords_generator(settings.SCREEN_HEIGHT, 2, settings.SCREEN_HEIGHT // 2 - 100)
     coords = [(coordsX[0], coordsY[0]), (coordsX[1], coordsY[0]),
               (coordsX[0], coordsY[1]), (coordsX[1], coordsY[1])]
     base_vels = ((0, 2), (-2, 0), (2, 0), (0, -2))
@@ -56,8 +56,8 @@ def strategy_square(enemies_sprite_group, all_sprite_group):
 
 
 def strategy_guided_square(enemies_sprite_group, all_sprite_group, player_object):
-    coordsX = base_coords_generator(SCREEN_WIDTH, 2, SCREEN_WIDTH // 2 - 100)
-    coordsY = base_coords_generator(SCREEN_HEIGHT, 2, SCREEN_HEIGHT // 2 - 100)
+    coordsX = base_coords_generator(settings.SCREEN_WIDTH, 2, settings.SCREEN_WIDTH // 2 - 100)
+    coordsY = base_coords_generator(settings.SCREEN_HEIGHT, 2, settings.SCREEN_HEIGHT // 2 - 100)
     coords = [(coordsX[0], coordsY[0]), (coordsX[1], coordsY[0]),
               (coordsX[0], coordsY[1]), (coordsX[1], coordsY[1])]
     for i, coord in enumerate(coords):
@@ -69,6 +69,6 @@ def strategy_guided_square(enemies_sprite_group, all_sprite_group, player_object
 
 def strategy_chase_bullet(enemies_sprite_group, all_sprite_group, player_object):
     new_enemy = ChaseBullet(hp=1, speed=2, position=(randrange(
-        0, SCREEN_WIDTH), randrange(0, SCREEN_HEIGHT)), object_to_chase=player_object)
+        0, settings.SCREEN_WIDTH), randrange(0, settings.SCREEN_HEIGHT)), object_to_chase=player_object)
     enemies_sprite_group.add(new_enemy)
     all_sprite_group.add(new_enemy)

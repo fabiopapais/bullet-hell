@@ -1,10 +1,6 @@
 import pygame
 
-from settings import (
-    SCREEN_HEIGHT,
-    SCREEN_WIDTH
-)
-
+import settings
 from pygame.locals import (
     K_w,
     K_s,
@@ -35,7 +31,7 @@ class Player(pygame.sprite.Sprite):
                             (0, 0), (0, 40), (40, 20)])  # cria triângulo do player
         # spawna o player no centro do mapa
         self.rect = self.surf.get_rect(
-            center=(SCREEN_WIDTH//2, SCREEN_HEIGHT//2))
+            center=(settings.SCREEN_WIDTH//2, settings.SCREEN_HEIGHT//2))
         self.hp = hp
         self.speed = speed
 
@@ -65,12 +61,12 @@ class Player(pygame.sprite.Sprite):
         # impede player de sair da tela
         if self.rect.left < 0:
             self.rect.left = 0
-        elif self.rect.right > SCREEN_WIDTH:
-            self.rect.right = SCREEN_WIDTH
+        elif self.rect.right > settings.SCREEN_WIDTH:
+            self.rect.right = settings.SCREEN_WIDTH
         if self.rect.top <= 0:
             self.rect.top = 0
-        elif self.rect.bottom >= SCREEN_HEIGHT:
-            self.rect.bottom = SCREEN_HEIGHT
+        elif self.rect.bottom >= settings.SCREEN_HEIGHT:
+            self.rect.bottom = settings.SCREEN_HEIGHT
 
         # assinala posição rect à propriedade pos
         self.position = pygame.Vector2(self.rect.center)
@@ -119,11 +115,11 @@ class Bullet(pygame.sprite.Sprite):
         # impede tiro de sair da tela
         if self.rect.right < 0:
             self.kill()
-        elif self.rect.left > SCREEN_WIDTH:
+        elif self.rect.left > settings.SCREEN_WIDTH:
             self.kill()
         elif self.rect.bottom < 0:
             self.kill()
-        elif self.rect.top > SCREEN_HEIGHT:
+        elif self.rect.top > settings.SCREEN_HEIGHT:
             self.kill()
 
 
@@ -252,11 +248,11 @@ class AllyBullet(pygame.sprite.Sprite):
         # assinala a posição ao rect, efetuando a mudança na posição do sprite
         self.rect.center = self.position
 
-        if self.rect.top > SCREEN_HEIGHT:
+        if self.rect.top > settings.SCREEN_HEIGHT:
             self.kill()
         elif self.rect.bottom < 0:
             self.kill()
-        elif self.rect.left > SCREEN_WIDTH:
+        elif self.rect.left > settings.SCREEN_WIDTH:
             self.kill()
         elif self.rect.right < 0:
             self.kill()

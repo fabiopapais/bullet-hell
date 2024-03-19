@@ -1,6 +1,6 @@
 import pygame
 
-from settings import *
+import settings
 from objects import Player, AllyBullet
 from strategies import *
 
@@ -13,13 +13,14 @@ from pygame.locals import (
 
 def main():
     pygame.init()
-    screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+    screen = pygame.display.set_mode((settings.SCREEN_WIDTH, settings.SCREEN_HEIGHT), pygame.RESIZABLE)
+    pygame.display.set_caption('Geometry Wars') 
 
-    player = Player(hp=INITIAL_HP, speed=INITIAL_PLAYER_SPEED)
+    player = Player(hp=settings.INITIAL_HP, speed=settings.INITIAL_PLAYER_SPEED)
     playerinvincible = False
     playerinvincible_counter = 0
 
-    # Grupos de spriteswd
+    # Grupos de sprites
     bullets = pygame.sprite.Group()
     ally_bullets = pygame.sprite.Group()
     all_sprites = pygame.sprite.Group()
@@ -33,16 +34,28 @@ def main():
     running = True
     clock = pygame.time.Clock()
     while running:
-        # é possível controlar o passo do jogo (dificuldade), alterando o mod, allways chose a multiple of 60
+        # handle screen resizing
+        current_screen_width, current_screen_height = pygame.display.get_surface().get_size()
+        
+
         playerinvincible_counter -= 1
         if playerinvincible_counter == 0:
             playerinvincible = False
         counter += 1
+        # é possível controlar o passo do jogo (dificuldade), alterando o mod, allways chose a multiple of 60
         counter = counter % 600
         screen.fill((0, 0, 0))
 
-        # Controla fim do programa
         for event in pygame.event.get():
+            # Controla redimensionamento da tela
+            current_screen_width, current_screen_height = screen.get_size()
+            if current_screen_width < settings.MIN_SCREEN_WIDTH or current_screen_height < settings.MIN_SCREEN_HEIGHT:
+                screen = pygame.display.set_mode((max(settings.MIN_SCREEN_WIDTH, current_screen_width), max(settings.MIN_SCREEN_HEIGHT, current_screen_height)), pygame.RESIZABLE)
+            if current_screen_width > settings.MAX_SCREEN_WIDTH or current_screen_height > settings.MAX_SCREEN_HEIGHT:
+                screen = pygame.display.set_mode((min(settings.MIN_SCREEN_WIDTH, current_screen_width), min(settings.MIN_SCREEN_HEIGHT, current_screen_height)), pygame.RESIZABLE)
+            settings.SCREEN_WIDTH = screen.get_size()[0]
+            settings.SCREEN_HEIGHT = screen.get_size()[1]
+            # Controla fim do programa
             if event.type == KEYDOWN:
                 if event.key == K_ESCAPE:
                     running = False
@@ -50,8 +63,8 @@ def main():
                 running = False
 
         # controla tiro do player
-        if pygame.mouse.get_pressed()[0] and (counter % INITIAL_ALLY_BULLET_COOLDOWN == 0):
-            shoot_player = (AllyBullet(INITIAL_ALLY_BULLET_SPEED, 1, player_object=player))
+        if pygame.mouse.get_pressed()[0] and (counter % settings.INITIAL_ALLY_BULLET_COOLDOWN == 0):
+            shoot_player = (AllyBullet(settings.INITIAL_ALLY_BULLET_SPEED, 1, player_object=player))
             ally_bullets.add(shoot_player)
             all_sprites.add(shoot_player)
 
@@ -62,7 +75,7 @@ def main():
         # (usamos o % mod para controlar os intervalos entre a criação de strategies)
         if counter == 2:
             strategy_updown(5, bullets, all_sprites)
-        if  counter % 20 == 0 and 300 <= counter < 600 and player.hp >= INITIAL_HP//3:
+        if  counter % 20 == 0 and 300 <= counter < 600 and player.hp >= settings.INITIAL_HP//3:
             strategy_leftright(6, bullets, all_sprites)
         if player.hp < 3 and counter % 30 == 0:
             strategy_square(bullets, all_sprites)
@@ -79,12 +92,12 @@ def main():
             if not playerinvincible:
                 playerinvincible = True
                 player.hp -= 1
-                playerinvincible_counter = INVINCIBILITY_FRAMES
+                playerinvincible_counter = settings.INVINCIBILITY_FRAMES
                 if player.hp <= 0:
                     player.kill()
                     running = False
 
-        # Lógica de colisões com entre tiros inimigos e aliados (TODO: avaliar forma mais eficiente)
+        # Lógica de colisões com entre tiros inimigos e aliados
         for bullet in ally_bullets:
             collided_bullet_enemy = pygame.sprite.spritecollideany(
                 bullet, bullets)
@@ -101,12 +114,12 @@ def main():
         screen.blit(enemiesDisplay, (20, 5))
         for i in range(0, player.hp):
             pygame.draw.circle(screen, (0, 0, 255),
-                               (SCREEN_WIDTH - 20 - (i * 20), 25), 5)
+                               (settings.SCREEN_WIDTH - 20 - (i * 20), 25), 5)
 
         for entity in all_sprites:
             screen.blit(entity.surf, entity.rect)
         pygame.display.flip()
-        clock.tick(60) # Altera o fps do jogoa
+        clock.tick(60) # Altera o fps do jogo
     pygame.quit()
 
 
