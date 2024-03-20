@@ -32,6 +32,17 @@ def main():
     counter = 0
     running = True
     clock = pygame.time.Clock()
+
+    #Musica
+    sound_damage = pygame.mixer.Sound("./assets/som_dano.mp3")
+    music = pygame.mixer.Sound("./assets/musica.mp3")
+    #sound_bullet = pygame.mixer.Sound("")
+
+    music.play(-1)
+    #sound_menu = pygame.mixer.Sound("")
+
+    
+
     while running:
         # é possível controlar o passo do jogo (dificuldade), alterando o mod, allways chose a multiple of 60
         playerinvincible_counter -= 1
@@ -52,6 +63,7 @@ def main():
         # controla tiro do player
         if pygame.mouse.get_pressed()[0] and (counter % INITIAL_ALLY_BULLET_COOLDOWN == 0):
             shoot_player = (AllyBullet(INITIAL_ALLY_BULLET_SPEED, 1, player_object=player))
+            #ssound_bullet.play()
             ally_bullets.add(shoot_player)
             all_sprites.add(shoot_player)
 
@@ -79,6 +91,7 @@ def main():
             if not playerinvincible:
                 playerinvincible = True
                 player.hp -= 1
+                sound_damage.play()
                 playerinvincible_counter = INVINCIBILITY_FRAMES
                 if player.hp <= 0:
                     player.kill()
