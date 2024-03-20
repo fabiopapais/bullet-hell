@@ -37,8 +37,6 @@ def main(difficulty):
 
     # Informações mostradas ao jogador
     killed_enemies = 0
-    myFont = pygame.font.Font(os.path.abspath('./bullet-hell/assets/Dune_Rise.ttf'), 30)
-    stats_font = pygame.font.Font(os.path.abspath('./bullet-hell/assets/Dune_Rise.ttf'), 35)
     alliedbulletspeed = settings.INITIAL_ALLY_BULLET_SPEED
     
     counter = 0
@@ -173,7 +171,7 @@ def main(difficulty):
         for i in range(0, player.hp):
             pygame.draw.circle(screen, (settings.green),
                                (settings.SCREEN_WIDTH - 20 - (i * 20), 25), 5)
-        enemiesDisplay = myFont.render(str(f'Kills  {killed_enemies}'), 10, (settings.white))
+        enemiesDisplay = settings.score_font.render(str(f'Kills  {killed_enemies}'), 10, (settings.white))
         screen.blit(enemiesDisplay, (20, 20))
 
         # prints attack speed
@@ -181,7 +179,7 @@ def main(difficulty):
         attack_speed_icon = pygame.transform.scale(attack_speed_icon, (35, 35))
         screen.blit(attack_speed_icon, (20, 90))
 
-        attack_speedDisplay = stats_font.render(str(player.atkspd), 10, (settings.white))
+        attack_speedDisplay = settings.stats_font.render(str(player.atkspd), 10, (settings.white))
         screen.blit(attack_speedDisplay, (70, 95))
 
         # prints bullet speed
@@ -189,7 +187,7 @@ def main(difficulty):
         bullet_speed_icon = pygame.transform.scale(bullet_speed_icon, (35, 35))
         screen.blit(bullet_speed_icon, (20, 150))
 
-        bullet_speedDisplay = stats_font.render(str(alliedbulletspeed), 10, (settings.white))
+        bullet_speedDisplay = settings.stats_font.render(str(alliedbulletspeed), 10, (settings.white))
         screen.blit(bullet_speedDisplay, (70, 155))
 
         pygame.display.flip()
