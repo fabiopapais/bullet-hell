@@ -336,7 +336,7 @@ class Button():
     """
 
     def __init__(self, text, x_pos, y_pos, enabled, width, height, font,
-                 color_text, color_button1, color_button2, color_outline, corner, screen):
+                 color_text, color_button1, color_button2, color_outline, corner, screen, sound_hover):
         self.text = text
         self.x_pos = x_pos
         self.y_pos = y_pos
@@ -350,10 +350,12 @@ class Button():
         self.color_outline = color_outline
         self.corner = corner
         self.screen = screen
+        self.sound_hover = sound_hover
 
         self.draw()
 
     def draw(self):
+
         mouse_pos = pygame.mouse.get_pos()
         left_click = pygame.mouse.get_pressed()[0]
         button_rect = pygame.rect.Rect(
@@ -367,9 +369,12 @@ class Button():
         if button_rect.collidepoint(mouse_pos) and self.enabled:
             pygame.draw.rect(self.screen, self.color_button1,
                              button_rect, 0, self.corner)
+            
+            
         else:
             pygame.draw.rect(self.screen, self.color_button2,
                              button_rect, 0, self.corner)
+
         pygame.draw.rect(self.screen, self.color_outline,
                          button_rect, 2, self.corner)
         self.screen.blit(button_text, button_text_rect)

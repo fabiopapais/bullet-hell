@@ -42,6 +42,10 @@ def main(difficulty=2):
     #Musica de brackground do game
     pygame.mixer.music.load('./bullet-hell/assets/music-game-normal.mp3')
     pygame.mixer.music.play(-1)
+
+    #Sound effects
+    sound_damage = pygame.mixer.Sound('./bullet-hell/assets/sound-damage.mp3')
+    
     
     counter = 0
     running = True
@@ -147,6 +151,7 @@ def main(difficulty=2):
             collided_enemy.kill()
             if not playerinvincible:
                 playerinvincible = True
+                sound_damage.play()
                 player.hp -= 1
                 playerinvincible_counter = settings.INVINCIBILITY_FRAMES
                 if player.hp <= 0:
