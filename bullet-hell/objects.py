@@ -127,8 +127,8 @@ class Bullet(pygame.sprite.Sprite):
         self.surf = pygame.Surface((size, size))
         
         # draw the surface of the Object
-        pygame.draw.rect(self.surf, (red), (0, 0, 20, 20), border_radius=2)
-        pygame.draw.rect(self.surf, (background_color), (2, 2, 16, 16), border_radius=2)
+        pygame.draw.rect(self.surf, (red), (0, 0, size, size), border_radius=2)
+        pygame.draw.rect(self.surf, (background_color), (2, 2, size-4, size-4), border_radius=2)
         
         self.rect = self.surf.get_rect(
             center=position

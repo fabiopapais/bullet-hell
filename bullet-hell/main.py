@@ -63,18 +63,41 @@ def main():
 
         # Controla dinâmica de criação de inimigos 
         # (usamos o % mod para controlar os intervalos entre a criação de strategies)
-        if counter%200 == 0:
-            strategy_updown(5, bullets, all_sprites, 20)
-        if  counter % 20 == 0 and 600 <= counter < 1200 and player.hp >= INITIAL_HP//3 and 100 > killed_enemies > 50:
-            strategy_leftright(6, bullets, all_sprites, 20)
-        if player.hp < 3 and counter % 30 == 0:
-            strategy_square(bullets, all_sprites, 20)
-        if counter % 240 == 0:
-            strategy_guided_square(bullets, all_sprites, player)
-        if counter % 120 == 0:
-            strategy_chase_bullet(bullets, all_sprites, player)
-        if counter%20 == 0 and killed_enemies > 100 and 300<counter<600:    
-            diagonal(6, bullets, all_sprites, 15)
+        if killed_enemies <= 100: # estágio 1
+            if  counter % 20 == 0 and 600 <= counter < 1200 and player.hp >= INITIAL_HP//3:
+                strategy_leftright(6, bullets, all_sprites, 20,2)
+            if counter % 120 == 0:
+                strategy_chase_bullet(bullets, all_sprites, player)
+        elif killed_enemies > 100 and killed_enemies <= 250: # estágio 2
+            if  counter % 20 == 0 and 600 <= counter < 1200 and player.hp >= INITIAL_HP//3:
+                strategy_leftright(6, bullets, all_sprites, 20,3)
+            if counter%200 == 0:
+                strategy_updown(5, bullets, all_sprites, 20)
+            if counter % 120 == 0:
+                strategy_chase_bullet(bullets, all_sprites, player)
+        elif killed_enemies > 250 and killed_enemies <= 500: # estágio 3
+            if counter%20 == 0:    
+                diagonal(6, bullets, all_sprites, 15, 3)
+            if counter% 120 == 0:
+                strategy_guided_squarebottom(bullets, all_sprites, player)
+        elif 1000 >= killed_enemies > 500: # estágio 4
+            if counter % 120 == 0:
+                strategy_guided_squaretop(bullets, all_sprites, player)
+                strategy_guided_squarebottom(bullets, all_sprites, player)
+            if  counter % 20 == 0 and 300 <= counter < 1200 and player.hp >= INITIAL_HP//3:
+                strategy_leftright(6, bullets, all_sprites, 20,5)
+        elif killed_enemies > 1000: # último estágio
+            if counter % 120 == 0:
+                strategy_chase_bullet(bullets, all_sprites, player)
+            if player.atkspd >= 25 and counter%3 == 0:
+                strategy_guided_square_edge(bullets, all_sprites, player)
+            
+        
+        
+        # if player.hp < 3 and counter % 30 == 0:
+        #     strategy_square(bullets, all_sprites, 20)
+        # if counter % 240 == 0:
+        #     strategy_guided_square(bullets, all_sprites, player)
         # strategy_guided_squaretop(bullets, all_sprites, player)
         # strategy_guided_squarebottom(bullets, all_sprites, player)
         bullets.update()
