@@ -11,14 +11,27 @@ from pygame.locals import (
     QUIT,
 )
 
+pygame.display.set_caption('Polygon Wars')
 
-def main():
+def main(difficulty):
+
+    if difficulty == 2 :
+        INITIAL_HP = 5
+        INITIAL_ATKSP = 2
+    else :
+        INITIAL_HP = 10
+        INITIAL_ATKSP = 5
+
     pygame.init()
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
     player = Player(hp=INITIAL_HP, speed=INITIAL_PLAYER_SPEED, atkspd=INITIAL_ATKSP)
     playerinvincible = False
     playerinvincible_counter = 0
+
+    # Variaveis para mostrar na tela quantos coletaveis foram pegos
+    player_atkspd = 0
+    bullet_spd = 0
 
     # Grupos de spriteswd
     bullets = pygame.sprite.Group()
@@ -28,7 +41,7 @@ def main():
     collectables = pygame.sprite.Group()
     # Informações mostradas ao jogador
     killed_enemies = 0
-    myFont = pygame.font.SysFont("Comic sans", 50)
+    myFont = pygame.font.Font("Dune_Rise.ttf", 50)
     alliedbulletspeed = INITIAL_ALLY_BULLET_SPEED
     
     counter = 0
@@ -79,7 +92,7 @@ def main():
         # strategy_guided_squarebottom(bullets, all_sprites, player)
         bullets.update()
         # Lógica de spawn de coletável
-        if counter == 1:
+        if counter == 1 and difficulty != 2:
             col = Collectable(((randint(0,SCREEN_WIDTH-COLLECTABLE_RADIUS),randint(0,SCREEN_HEIGHT-COLLECTABLE_RADIUS))),COLLECTABLE_RADIUS,(0,0,255))
             collectables.add(col)
             all_sprites.add(col)
@@ -89,11 +102,12 @@ def main():
         if collided_collectable:
             if collided_collectable.color == (0,0,255):
                 player.hp += 1
-            elif collided_collectable.color == ("#FAEC5D"):
+            elif collided_collectable.color == (250,236,93):
                 player.set_atkspd(1)
-
-            elif collided_collectable.color == ("#D164FA") and alliedbulletspeed < 10:
+                player_atkspd += 1
+            elif collided_collectable.color == (209,100,250) and alliedbulletspeed < 10:
                 alliedbulletspeed += 1
+                bullet_spd += 1
             collided_collectable.kill()
 
         # Lógica de colisões entre player e tiros inimigos
@@ -115,7 +129,7 @@ def main():
                 collided_bullet_enemy.hp -= A_bullet.hp
                 if collided_bullet_enemy.hp <= 0:
                     if randint(0,99)in range(COLLECTABLE_SPAWN_CHANCE):
-                        colorlist = [("#FAEC5D"),("#D164FA")] # hp, atksp, bulletspeeda
+                        colorlist = [(250,236,93),(209,100,250)] # hp, atksp, bulletspeeda
                         col = Collectable(((collided_bullet_enemy.rect.center)),COLLECTABLE_RADIUS,choice(colorlist))
                         collectables.add(col)
                         all_sprites.add(col)
@@ -124,12 +138,19 @@ def main():
                 A_bullet.kill()
 
         # Atualiza informações mostradas ao jogador
-        enemiesDisplay = myFont.render(
-            str(killed_enemies), 10, (255, 255, 255))
-        screen.blit(enemiesDisplay, (20, 5))
+        enemiesDisplay = myFont.render(str(killed_enemies), True, (255, 255, 255))
+        screen.blit(enemiesDisplay, (20, 20))
         for i in range(0, player.hp):
             pygame.draw.circle(screen, (0, 0, 255),
                                (SCREEN_WIDTH - 20 - (i * 20), 25), 5)
+        
+        for i in range(0,player_atkspd) :
+            pygame.draw.circle(screen, (250,236,93),
+                               (SCREEN_WIDTH - 20 - (i * 20), 45), 5)
+        
+        for i in range(0,bullet_spd) :
+            pygame.draw.circle(screen, (209,100,250),
+                               (SCREEN_WIDTH - 20 - (i * 20), 65), 5)
 
         for entity in all_sprites:
             screen.blit(entity.surf, entity.rect)

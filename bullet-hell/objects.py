@@ -303,3 +303,52 @@ class Collectable(pygame.sprite.Sprite):
         self.rect = self.surf.get_rect(
             center=position
         )
+
+class Button() :
+    """
+    Botoes para serem usados tanto na pagina de menu
+    quanto numa possivel pagina de end game
+    """
+
+    def __init__(self, text, x_pos, y_pos, enabled, width, height, font,
+                  color_text, color_button1, color_button2, color_outline, corner, screen) :
+        self.text = text
+        self.x_pos = x_pos
+        self.y_pos = y_pos
+        self.enabled = enabled
+        self.width = width
+        self.height = height
+        self.font = font
+        self.color_text = color_text
+        self.color_button1 = color_button1
+        self.color_button2= color_button2
+        self.color_outline = color_outline
+        self.corner = corner
+        self.screen = screen
+
+        self.draw()
+
+    def draw(self) :
+        mouse_pos = pygame.mouse.get_pos()
+        left_click = pygame.mouse.get_pressed()[0]
+        button_rect = pygame.rect.Rect((self.x_pos - self.width / 2, self.y_pos - self.height / 2), (self.width, self.height))
+
+        button_text = self.font.render(self.text, True, self.color_text)
+        button_text_rect = button_text.get_rect(center = (self.x_pos, self.y_pos))
+        button_rect = pygame.rect.Rect((self.x_pos - self.width / 2, self.y_pos - self.height / 2), (self.width, self.height))
+        if button_rect.collidepoint(mouse_pos) and self.enabled:
+            pygame.draw.rect(self.screen, self.color_button1, button_rect, 0, self.corner)
+        else :
+            pygame.draw.rect(self.screen, self.color_button2, button_rect, 0, self.corner)
+        pygame.draw.rect(self.screen, self.color_outline, button_rect, 2, self.corner)
+        self.screen.blit(button_text, button_text_rect)
+
+    def check_click(self):
+        mouse_pos = pygame.mouse.get_pos()
+        left_click = pygame.mouse.get_pressed()[0]
+        button_rect = pygame.rect.Rect((self.x_pos - self.width / 2, self.y_pos - self.height / 2), (self.width, self.height))
+
+        if left_click and button_rect.collidepoint(mouse_pos) and self.enabled:
+            return True
+        else :
+            return False
