@@ -352,7 +352,7 @@ class Button():
         self.screen = screen
         self.sound_hover = sound_hover
 
-        self.draw()
+
 
     def draw(self):
 
@@ -370,15 +370,20 @@ class Button():
             pygame.draw.rect(self.screen, self.color_button1,
                              button_rect, 0, self.corner)
             
-            
+            already_hover = True
         else:
             pygame.draw.rect(self.screen, self.color_button2,
                              button_rect, 0, self.corner)
+            
+            already_hover = False
+            
 
         pygame.draw.rect(self.screen, self.color_outline,
                          button_rect, 2, self.corner)
         self.screen.blit(button_text, button_text_rect)
 
+        return already_hover
+    
     def check_click(self):
         mouse_pos = pygame.mouse.get_pos()
         left_click = pygame.mouse.get_pressed()[0]
@@ -389,3 +394,4 @@ class Button():
             return True
         else:
             return False
+    

@@ -21,7 +21,10 @@ pygame.display.set_caption('Polygon Wars')
 #Musica menu
 music_menu = pygame.mixer.Sound('./bullet-hell/assets/music-menu.mp3')
 music_menu.play(-1)
+
+#Efeitos sonoros
 sound_button_hover = pygame.mixer.Sound('./bullet-hell/assets/button-sound.mp3')
+sound_click = pygame.mixer.Sound('./bullet-hell/assets/sound-click.mp3')
 
 
 running = True
@@ -50,16 +53,20 @@ while running:
         center=(settings.SCREEN_WIDTH/2, settings.SCREEN_HEIGHT/2 - 200)))
 
     button_play = Button("Play", settings.SCREEN_WIDTH/2, settings.SCREEN_HEIGHT/2 + 50, True, 300, 150, settings.font_play,
-                        (255, 255, 255), (50, 50, 50), settings.background_color, (255, 255, 255), 10, screen, sound_button_hover )
+                        (255, 255, 255), (50, 50, 50), settings.background_color, (255, 255, 255), 10, screen, sound_button_hover)
+    button_play.draw()
     
     button_berserk = Button("Berserk Mode", settings.SCREEN_WIDTH/2, settings.SCREEN_HEIGHT/2 + 200, True, 180, 90, settings.font_berserk,
                             (255, 255, 255), (50, 50, 50), settings.background_color, (255, 255, 255), 10, screen, sound_button_hover)
+    button_berserk.draw()
 
     if button_play.check_click():
+        sound_click.play()
         music_menu.stop()
         main.main(1)
 
     if button_berserk.check_click():
+        sound_click.play()
         music_menu.stop()
         main.main(2)
 

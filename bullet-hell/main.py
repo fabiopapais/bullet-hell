@@ -20,6 +20,13 @@ def main(difficulty=2):
     if difficulty == 2 :
         settings.INITIAL_HP = 5
         settings.INITIAL_ATKSP = 2
+        settings.FPS = 120
+        pygame.mixer.music.load('./bullet-hell/assets/sound-berssek.mp3')
+        pygame.mixer.music.play(-1)
+    
+    else:
+        pygame.mixer.music.load('./bullet-hell/assets/music-game-normal.mp3')
+        pygame.mixer.music.play(-1)
 
     pygame.init()
     screen = pygame.display.set_mode((settings.SCREEN_WIDTH, settings.SCREEN_HEIGHT), pygame.RESIZABLE)
@@ -39,12 +46,15 @@ def main(difficulty=2):
     killed_enemies = 0
     alliedbulletspeed = settings.INITIAL_ALLY_BULLET_SPEED
 
-    #Musica de brackground do game
-    pygame.mixer.music.load('./bullet-hell/assets/music-game-normal.mp3')
-    pygame.mixer.music.play(-1)
 
     #Sound effects
     sound_damage = pygame.mixer.Sound('./bullet-hell/assets/sound-damage.mp3')
+    sound_shoot = pygame.mixer.Sound('./bullet-hell/assets/sound-shoot2.wav')
+    sound_shoot.set_volume(0.3)
+    sound_collectable = pygame.mixer.Sound('./bullet-hell/assets/sound-collectable.mp3')
+    sound_collectable.set_volume(0.3)
+    sound_enemy_die = pygame.mixer.Sound('./bullet-hell/assets/sound-enemy-die.wav')
+    sound_enemy_die.set_volume(0.25)
     
     
     counter = 0
@@ -82,6 +92,7 @@ def main(difficulty=2):
 
         # controla tiro do player
         if pygame.mouse.get_pressed()[0] and player.can_shoot:
+            sound_shoot.play()
             player.last_shot = counter
             shoot_player = (AllyBullet(alliedbulletspeed, 1, player_object=player))
             ally_bullets.add(shoot_player)
@@ -136,6 +147,7 @@ def main(difficulty=2):
         # Lógica de colisões entre player e coletaveis
         collided_collectable = pygame.sprite.spritecollideany(player, collectables)
         if collided_collectable:
+            sound_collectable.play()
             if collided_collectable.color == (settings.green):
                 player.hp += 1
             elif collided_collectable.color == (settings.blue):
@@ -169,6 +181,7 @@ def main(difficulty=2):
                         col = Collectable(((collided_bullet_enemy.rect.center)),settings.COLLECTABLE_RADIUS,choice(colorlist))
                         collectables.add(col)
                         all_sprites.add(col)
+                    sound_enemy_die.play()
                     collided_bullet_enemy.kill()
                     killed_enemies += 1
                 A_bullet.kill()
