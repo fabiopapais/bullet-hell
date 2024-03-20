@@ -28,7 +28,8 @@ def main():
     collectables = pygame.sprite.Group()
     # Informações mostradas ao jogador
     killed_enemies = 0
-    myFont = pygame.font.SysFont("Open Sans", 50)
+    stats_font = pygame.font.SysFont('Open Sans', 35)
+    myFont = pygame.font.SysFont("Open Sans", 60)
     alliedbulletspeed = INITIAL_ALLY_BULLET_SPEED
     
     counter = 0
@@ -39,6 +40,7 @@ def main():
         playerinvincible_counter -= 1
         if playerinvincible_counter == 0:
             playerinvincible = False
+            
         counter += 1
         counter = counter % 1200
         screen.fill((background_color))
@@ -73,8 +75,8 @@ def main():
             strategy_guided_square(bullets, all_sprites, player)
         if counter % 120 == 0:
             strategy_chase_bullet(bullets, all_sprites, player)
-        if counter%20 == 0 and killed_enemies > 100 and 300<counter<600:    
-            diagonal(6, bullets, all_sprites, 15)
+        if counter % 20 == 0 and killed_enemies > 100 and 300<counter<600:
+            diagonal(6, bullets, all_sprites, 14)
         # strategy_guided_squaretop(bullets, all_sprites, player)
         # strategy_guided_squarebottom(bullets, all_sprites, player)
         bullets.update()
@@ -94,6 +96,7 @@ def main():
 
             elif collided_collectable.color == (yellow) and alliedbulletspeed < 10:
                 alliedbulletspeed += 1
+                
             collided_collectable.kill()
 
         # Lógica de colisões entre player e tiros inimigos
@@ -114,7 +117,7 @@ def main():
             if collided_bullet_enemy:
                 collided_bullet_enemy.hp -= A_bullet.hp
                 if collided_bullet_enemy.hp <= 0:
-                    if randint(0,99)in range(COLLECTABLE_SPAWN_CHANCE):
+                    if randint(0,99) in range(COLLECTABLE_SPAWN_CHANCE):
                         colorlist = [(blue),(yellow)] # hp, atksp, bulletspeeda
                         col = Collectable(((collided_bullet_enemy.rect.center)),COLLECTABLE_RADIUS,choice(colorlist))
                         collectables.add(col)
@@ -124,9 +127,25 @@ def main():
                 A_bullet.kill()
 
         # Atualiza informações mostradas ao jogador
-        enemiesDisplay = myFont.render(
-            str(killed_enemies), 10, (white))
-        screen.blit(enemiesDisplay, (20, 5))
+        enemiesDisplay = myFont.render(str(f'Kills: {killed_enemies}'), 10, (white))
+        screen.blit(enemiesDisplay, (20, 20))
+        
+        # prints attack speed
+        attack_speed_icon = pygame.image.load('bullet-hell/img_sprites/attack-speed.png')
+        attack_speed_icon = pygame.transform.scale(attack_speed_icon, (35, 35))
+        screen.blit(attack_speed_icon, (20, 90))
+        
+        attack_speedDisplay = stats_font.render(str(player.atkspd), 10, (white))
+        screen.blit(attack_speedDisplay, (70, 95))
+        
+        # prints bullet speed
+        bullet_speed_icon = pygame.image.load('bullet-hell/img_sprites/bullet-speed.png')
+        bullet_speed_icon = pygame.transform.scale(bullet_speed_icon, (35, 35))
+        screen.blit(bullet_speed_icon, (20, 150))
+        
+        bullet_speedDisplay = stats_font.render(str(alliedbulletspeed), 10, (white))
+        screen.blit(bullet_speedDisplay, (70, 155))
+        
         for i in range(0, player.hp):
             pygame.draw.circle(screen, (green),
                                (SCREEN_WIDTH - 20 - (i * 20), 25), 5)
