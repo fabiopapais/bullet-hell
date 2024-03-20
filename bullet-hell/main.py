@@ -1,7 +1,8 @@
 import pygame
-
+import os
 from random import randint, choice
-from settings import *
+
+import settings
 from objects import Player, AllyBullet, Collectable
 from strategies import *
 
@@ -11,40 +12,62 @@ from pygame.locals import (
     QUIT,
 )
 
+pygame.display.set_caption('Polygon Wars')
 
-def main():
+def main(difficulty):
+
+    # Altera parâmetros para dificuldade
+    if difficulty == 2 :
+        settings.INITIAL_HP = 5
+        settings.INITIAL_ATKSP = 2
+
     pygame.init()
-    screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+    screen = pygame.display.set_mode((settings.SCREEN_WIDTH, settings.SCREEN_HEIGHT), pygame.RESIZABLE)
 
-    player = Player(hp=INITIAL_HP, speed=INITIAL_PLAYER_SPEED, atkspd=INITIAL_ATKSP)
+    player = Player(hp=settings.INITIAL_HP, speed=settings.INITIAL_PLAYER_SPEED, atkspd=settings.INITIAL_ATKSP)
     playerinvincible = False
     playerinvincible_counter = 0
 
-    # Grupos de spriteswd
+    # Grupos de sprites
     bullets = pygame.sprite.Group()
     ally_bullets = pygame.sprite.Group()
     all_sprites = pygame.sprite.Group()
     all_sprites.add(player)
     collectables = pygame.sprite.Group()
+
     # Informações mostradas ao jogador
     killed_enemies = 0
-    myFont = pygame.font.SysFont("Open Sans", 50)
-    alliedbulletspeed = INITIAL_ALLY_BULLET_SPEED
+    myFont = pygame.font.Font(os.path.abspath('./bullet-hell/assets/Dune_Rise.ttf'), 30)
+    stats_font = pygame.font.Font(os.path.abspath('./bullet-hell/assets/Dune_Rise.ttf'), 35)
+    alliedbulletspeed = settings.INITIAL_ALLY_BULLET_SPEED
     
     counter = 0
     running = True
     clock = pygame.time.Clock()
     while running:
+        # handle screen resizing
+        current_screen_width, current_screen_height = pygame.display.get_surface().get_size()
+
         # é possível controlar o passo do jogo (dificuldade), alterando o mod, allways chose a multiple of 60
         playerinvincible_counter -= 1
         if playerinvincible_counter == 0:
             playerinvincible = False
         counter += 1
         counter = counter % 1200
-        screen.fill((background_color))
+        screen.fill((settings.background_color))
 
-        # Controla fim do programa
+        # handle screen resizing
+        current_screen_width, current_screen_height = pygame.display.get_surface().get_size()
         for event in pygame.event.get():
+            # Controla redimensionamento da tela
+            current_screen_width, current_screen_height = screen.get_size()
+            if current_screen_width < settings.MIN_SCREEN_WIDTH or current_screen_height < settings.MIN_SCREEN_HEIGHT:
+                screen = pygame.display.set_mode((max(settings.MIN_SCREEN_WIDTH, current_screen_width), max(settings.MIN_SCREEN_HEIGHT, current_screen_height)), pygame.RESIZABLE)
+            if current_screen_width > settings.MAX_SCREEN_WIDTH or current_screen_height > settings.MAX_SCREEN_HEIGHT:
+                screen = pygame.display.set_mode((min(settings.MIN_SCREEN_WIDTH, current_screen_width), min(settings.MIN_SCREEN_HEIGHT, current_screen_height)), pygame.RESIZABLE)
+            settings.SCREEN_WIDTH = screen.get_size()[0]
+            settings.SCREEN_HEIGHT = screen.get_size()[1]
+            # Controla fim do programa
             if event.type == KEYDOWN:
                 if event.key == K_ESCAPE:
                     running = False
@@ -64,12 +87,12 @@ def main():
         # Controla dinâmica de criação de inimigos 
         # (usamos o % mod para controlar os intervalos entre a criação de strategies)
         if killed_enemies <= 100: # estágio 1
-            if  counter % 20 == 0 and 600 <= counter < 1200 and player.hp >= INITIAL_HP//3:
+            if  counter % 20 == 0 and 600 <= counter < 1200 and player.hp >= settings.INITIAL_HP//3:
                 strategy_leftright(6, bullets, all_sprites, 20,2)
             if counter % 120 == 0:
                 strategy_chase_bullet(bullets, all_sprites, player)
         elif killed_enemies > 100 and killed_enemies <= 250: # estágio 2
-            if  counter % 20 == 0 and 600 <= counter < 1200 and player.hp >= INITIAL_HP//3:
+            if  counter % 20 == 0 and 600 <= counter < 1200 and player.hp >= settings.INITIAL_HP//3:
                 strategy_leftright(6, bullets, all_sprites, 20,3)
             if counter%200 == 0:
                 strategy_updown(5, bullets, all_sprites, 20)
@@ -79,12 +102,12 @@ def main():
             if counter%20 == 0:    
                 diagonal(6, bullets, all_sprites, 15, 3)
             if counter% 120 == 0:
-                strategy_guided_squarebottom(bullets, all_sprites, player)
+                strategy_guided_square_bottom(bullets, all_sprites, player)
         elif 1000 >= killed_enemies > 500: # estágio 4
             if counter % 120 == 0:
                 strategy_guided_squaretop(bullets, all_sprites, player)
-                strategy_guided_squarebottom(bullets, all_sprites, player)
-            if  counter % 20 == 0 and 300 <= counter < 1200 and player.hp >= INITIAL_HP//3:
+                strategy_guided_square_bottom(bullets, all_sprites, player)
+            if  counter % 20 == 0 and 300 <= counter < 1200 and player.hp >= settings.INITIAL_HP//3:
                 strategy_leftright(6, bullets, all_sprites, 20,5)
         elif 2000 > killed_enemies > 1000: # último estágio
             if counter % 60 == 0:
@@ -97,31 +120,22 @@ def main():
             if counter%10 == 0:
                 strategy_guided_square_edge(bullets, all_sprites, player)
 
-            
-        
-        
-        # if player.hp < 3 and counter % 30 == 0:
-        #     strategy_square(bullets, all_sprites, 20)
-        # if counter % 240 == 0:
-        #     strategy_guided_square(bullets, all_sprites, player)
-        # strategy_guided_squaretop(bullets, all_sprites, player)
-        # strategy_guided_squarebottom(bullets, all_sprites, player)
         bullets.update()
         # Lógica de spawn de coletável
-        if counter == 1:
-            col = Collectable(((randint(0,SCREEN_WIDTH-COLLECTABLE_RADIUS),randint(0,SCREEN_HEIGHT-COLLECTABLE_RADIUS))),COLLECTABLE_RADIUS,(green))
+        if counter == 1 and difficulty != 2:
+            col = Collectable(((randint(0,settings.SCREEN_WIDTH-settings.COLLECTABLE_RADIUS),randint(0,settings.SCREEN_HEIGHT-settings.COLLECTABLE_RADIUS))),settings.COLLECTABLE_RADIUS,(settings.green))
             collectables.add(col)
             all_sprites.add(col)
 
         # Lógica de colisões entre player e coletaveis
         collided_collectable = pygame.sprite.spritecollideany(player, collectables)
         if collided_collectable:
-            if collided_collectable.color == (green):
+            if collided_collectable.color == (settings.green):
                 player.hp += 1
-            elif collided_collectable.color == (blue):
+            elif collided_collectable.color == (settings.blue):
                 player.set_atkspd(1)
 
-            elif collided_collectable.color == (yellow) and alliedbulletspeed < 10:
+            elif collided_collectable.color == (settings.yellow) and alliedbulletspeed < 10:
                 alliedbulletspeed += 1
             collided_collectable.kill()
 
@@ -132,38 +146,54 @@ def main():
             if not playerinvincible:
                 playerinvincible = True
                 player.hp -= 1
-                playerinvincible_counter = INVINCIBILITY_FRAMES
+                playerinvincible_counter = settings.INVINCIBILITY_FRAMES
                 if player.hp <= 0:
                     player.kill()
                     running = False
 
-        # Lógica de colisões com entre tiros inimigos e aliados (TODO: avaliar forma mais eficiente)
+        # Lógica de colisões com entre tiros inimigos e aliados
         for A_bullet in ally_bullets:
             collided_bullet_enemy = pygame.sprite.spritecollideany(A_bullet, bullets)
             if collided_bullet_enemy:
                 collided_bullet_enemy.hp -= A_bullet.hp
                 if collided_bullet_enemy.hp <= 0:
-                    if randint(0,99)in range(COLLECTABLE_SPAWN_CHANCE):
-                        colorlist = [(blue),(yellow)] # hp, atksp, bulletspeeda
-                        col = Collectable(((collided_bullet_enemy.rect.center)),COLLECTABLE_RADIUS,choice(colorlist))
+                    if randint(0,99)in range(settings.COLLECTABLE_SPAWN_CHANCE):
+                        colorlist = [(settings.blue),(settings.yellow)] # hp, atksp, bulletspeeda
+                        col = Collectable(((collided_bullet_enemy.rect.center)),settings.COLLECTABLE_RADIUS,choice(colorlist))
                         collectables.add(col)
                         all_sprites.add(col)
                     collided_bullet_enemy.kill()
                     killed_enemies += 1
                 A_bullet.kill()
-
-        # Atualiza informações mostradas ao jogador
-        enemiesDisplay = myFont.render(
-            str(killed_enemies), 10, (white))
-        screen.blit(enemiesDisplay, (20, 5))
-        for i in range(0, player.hp):
-            pygame.draw.circle(screen, (green),
-                               (SCREEN_WIDTH - 20 - (i * 20), 25), 5)
-
+        
         for entity in all_sprites:
             screen.blit(entity.surf, entity.rect)
+
+        # Atualiza informações mostradas ao jogador
+        for i in range(0, player.hp):
+            pygame.draw.circle(screen, (settings.green),
+                               (settings.SCREEN_WIDTH - 20 - (i * 20), 25), 5)
+        enemiesDisplay = myFont.render(str(f'Kills  {killed_enemies}'), 10, (settings.white))
+        screen.blit(enemiesDisplay, (20, 20))
+
+        # prints attack speed
+        attack_speed_icon = pygame.image.load(os.path.abspath('./bullet-hell/assets/attack-speed.png'))
+        attack_speed_icon = pygame.transform.scale(attack_speed_icon, (35, 35))
+        screen.blit(attack_speed_icon, (20, 90))
+
+        attack_speedDisplay = stats_font.render(str(player.atkspd), 10, (settings.white))
+        screen.blit(attack_speedDisplay, (70, 95))
+
+        # prints bullet speed
+        bullet_speed_icon = pygame.image.load(os.path.abspath('./bullet-hell/assets/bullet-speed.png'))
+        bullet_speed_icon = pygame.transform.scale(bullet_speed_icon, (35, 35))
+        screen.blit(bullet_speed_icon, (20, 150))
+
+        bullet_speedDisplay = stats_font.render(str(alliedbulletspeed), 10, (settings.white))
+        screen.blit(bullet_speedDisplay, (70, 155))
+
         pygame.display.flip()
-        clock.tick(FPS) # Altera o fps do jogoa
+        clock.tick(settings.FPS) # Altera o fps do jogo
     pygame.quit()
 
 
