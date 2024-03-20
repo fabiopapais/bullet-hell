@@ -18,6 +18,10 @@ clock = pygame.time.Clock()
 screen = pygame.display.set_mode((settings.SCREEN_WIDTH, settings.SCREEN_HEIGHT), pygame.RESIZABLE)
 pygame.display.set_caption('Polygon Wars')
 
+#Musica menu
+music_menu = pygame.mixer.Sound('./bullet-hell/assets/music-menu.mp3')
+music_menu.play(-1)
+
 
 running = True
 
@@ -51,9 +55,11 @@ while running:
                             (255, 255, 255), (50, 50, 50), settings.background_color, (255, 255, 255), 10, screen)
 
     if button_play.check_click():
+        music_menu.stop()
         main.main(1)
 
     if button_berserk.check_click():
+        music_menu.stop()
         main.main(2)
 
     pygame.display.flip()

@@ -14,7 +14,7 @@ from pygame.locals import (
 
 pygame.display.set_caption('Polygon Wars')
 
-def main(difficulty):
+def main(difficulty=2):
 
     # Altera parâmetros para dificuldade
     if difficulty == 2 :
@@ -38,6 +38,10 @@ def main(difficulty):
     # Informações mostradas ao jogador
     killed_enemies = 0
     alliedbulletspeed = settings.INITIAL_ALLY_BULLET_SPEED
+
+    #Musica de brackground do game
+    pygame.mixer.music.load('./bullet-hell/assets/music-game-normal.mp3')
+    pygame.mixer.music.play(-1)
     
     counter = 0
     running = True
