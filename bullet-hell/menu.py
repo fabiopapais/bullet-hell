@@ -48,7 +48,7 @@ while running:
                         (255, 255, 255), (50, 50, 50), settings.background_color, (255, 255, 255), 10, screen)
 
     button_berserk = Button("Berserk Mode", settings.SCREEN_WIDTH/2, settings.SCREEN_HEIGHT/2 + 200, True, 180, 90, settings.font_berserk,
-                            (255, 255, 255), (50, 50, 50), settings.background_colors, (255, 255, 255), 10, screen)
+                            (255, 255, 255), (50, 50, 50), settings.background_color, (255, 255, 255), 10, screen)
 
     if button_play.check_click():
         main.main(1)
