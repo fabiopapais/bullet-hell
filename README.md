@@ -3,7 +3,7 @@ Projeto final para a disciplina de Introdução à Programação do Curso de Ci�
 
 ## Grupo
 - Josias Netto (jhcn)
-- Samuel (slgb)
+- Samuel Braga (slgb)
 - Fábio Papais (flfp)
 - Gustavo Macena (gmp5)
 - Felipe Maran Alves (fma3)
