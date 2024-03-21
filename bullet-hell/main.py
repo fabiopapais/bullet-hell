@@ -23,6 +23,10 @@ def main(difficulty=2):
         settings.FPS = 120
         pygame.mixer.music.load('./bullet-hell/assets/sound-berssek.mp3')
         pygame.mixer.music.play(-1)
+        settings.player_color = settings.red
+        settings.INVINCIBILITY_FRAMES = 40
+        settings.INITIAL_PLAYER_SPEED = 2
+        settings.COLLECTABLE_SPAWN_CHANCE == 20
     
     else:
         pygame.mixer.music.load('./bullet-hell/assets/music-game-normal.mp3')
@@ -43,7 +47,6 @@ def main(difficulty=2):
     # Informações mostradas ao jogador
     killed_enemies = 0
     playerinvincible_counter = 0
-    killed_enemies_total = 0
     alliedbulletspeed = settings.INITIAL_ALLY_BULLET_SPEED
     playerinvincible = False
 
@@ -110,7 +113,7 @@ def main(difficulty=2):
         elif killed_enemies > 100 and killed_enemies <= 250: # estágio 2
             if  counter % 20 == 0 and 600 <= counter < 1200 and player.hp >= settings.INITIAL_HP//3:
                 strategy_leftright(6, bullets, all_sprites, 20,3)
-            if counter%200 == 0:
+            if counter%90 == 0:
                 strategy_updown(5, bullets, all_sprites, 20)
             if counter % 120 == 0:
                 strategy_chase_bullet(bullets, all_sprites, player)
@@ -119,12 +122,17 @@ def main(difficulty=2):
                 diagonal(6, bullets, all_sprites, 15, 3)
             if counter% 120 == 0:
                 strategy_guided_square_bottom(bullets, all_sprites, player)
+            if counter % 200 == 0:
+                strategy_leftright(20,bullets, all_sprites,20,2)
         elif 1000 >= killed_enemies > 500: # estágio 4
-            if counter % 120 == 0:
+            if counter % 180 == 0:
                 strategy_guided_squaretop(bullets, all_sprites, player)
                 strategy_guided_square_bottom(bullets, all_sprites, player)
+            if counter % 240 == 0:
+                strategy_guided_square_edge(bullets, all_sprites, player)
             if  counter % 20 == 0 and 300 <= counter < 1200 and player.hp >= settings.INITIAL_HP//3:
                 strategy_leftright(6, bullets, all_sprites, 20,5)
+
         elif 2000 > killed_enemies > 1000: # último estágio
             if counter % 60 == 0:
                 strategy_chase_bullet(bullets, all_sprites, player)
