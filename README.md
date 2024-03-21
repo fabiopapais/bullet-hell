@@ -12,6 +12,7 @@ Projeto final para a disciplina de Introdução à Programação do Curso de Ci�
 
 ## Arquitetura do projeto
 O código tem como ponto de partida o módulo menu.py, que é responsável por chamar o módulo principal chamado main.py, onde está o loop principal do jogo, que também chama o arquivo gameover.py, caso o jogador perca. Dentro de main.py, estão as declarações e importações principais do jogo, assim como a criação dos principais objetos. Todos os objetos, incluindo o player, inimigos, e botões, estão definidos e separados dentro do módulo objects.py e são importados e instanciados durante o jogo. 
+
 No loop principal, além da criação dos indicadores para o usuário, também estão definidas funções que controlam o comportamento e andamento do jogo. Essas funções são chamadas "strategies", e estão isoladas dentro do módulo strategies.py. Nele, estão definidas ferramentas que permitem criar padrões de spawn, movimentação e criação de inimigos do jogo, nos mais diferentes formatos. No loop principal, usamos estas funções, junto de outros parâmetros como contadores de tempo, para criar padrões de ataques contra o inimigo ao decorrer do jogo. Além disso, a main controla todo a lógica de colisões entre sprites de diferentes tipos, assim como a atualização de valores como hp, attackspeed e outros parâmetros importantes para a lógica do jogador.
 
 
