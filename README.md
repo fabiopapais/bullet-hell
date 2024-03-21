@@ -28,7 +28,7 @@ Posições relativas ao mouse e orientação ao player  –> Josias e Samuel
 
 
 ## Conceitos apresentados na disciplina e utilizados no projeto
-Como o framework influencia a lógica do desenvolvimento e da implementação de conceitos, a modularização como um todo foi muito útil, herança na criação de multiclasses / heranças múltiplas, além de muitos conceitos básicos que foram essenciais no desenvolvimento do projeto como um todo, com assuntos como tuplas, listas, normalização de vetores, entre muitos outros.
+Não só muitos conceitos básicos da matéria de Introdução à Programação foram essenciais no desenvolvimento do projeto como um todo, como tuplas (utilizados em vetores por exemplo), também foram utilizados assuntos de outras matérias, como normalização de vetores para criar um vetor de movimento entre dois pontos do espaço que tem um movimento fluido. Além disso, alguns assuntos mais avançados da matéria de IP foram extremamente necessários para que o jogo funcionasse de forma fluida, como a modularização do código como um todo, o que foi muito útil; e herança / heranças múltiplas na criação de classes, utilizado especialmente na implementação de sprites, bem como nos tipos de bala. 
 
 
 ## Desafios, erros, e lições aprendidas
