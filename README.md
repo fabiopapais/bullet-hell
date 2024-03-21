@@ -15,7 +15,7 @@ O código tem como ponto de partida o módulo menu.py, que é responsável por c
 No loop principal, além da criação dos indicadores para o usuário, também estão definidas funções que controlam o comportamento e andamento do jogo. Essas funções são chamadas "strategies", e estão isoladas dentro do módulo strategies.py. Nele, estão definidas ferramentas que permitem criar padrões de spawn, movimentação e criação de inimigos do jogo, nos mais diferentes formatos. No loop principal, usamos estas funções, junto de outros parâmetros como contadores de tempo, para criar padrões de ataques contra o inimigo ao decorrer do jogo. Além disso, a main controla todo a lógica de colisões entre sprites de diferentes tipos, assim como a atualização de valores como hp, attackspeed e outros parâmetros importantes para a lógica do jogador.
 
 
-Ferramentas utilizadas
+## Ferramentas utilizadas
 O projeto foi programado em Python, e fez uso da biblioteca externa Pygame, a qual permite com que o programa rode de forma constante e, dessa forma, permite com que o jogo funcione. Além disso, também foram utilizadas algumas bibliotecas como random, a fim de implementar elementos de aleatoriedade no que inimigos podem deixar pra trás ao morrerem.
 
 
