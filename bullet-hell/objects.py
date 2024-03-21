@@ -1,5 +1,5 @@
 import pygame
-
+from os import path
 import settings
 
 from pygame.locals import (
@@ -354,17 +354,12 @@ class Button():
         self.draw()
 
     def draw(self):
-        mouse_pos = pygame.mouse.get_pos()
-        left_click = pygame.mouse.get_pressed()[0]
-        button_rect = pygame.rect.Rect(
-            (self.x_pos - self.width / 2, self.y_pos - self.height / 2), (self.width, self.height))
-
         button_text = self.font.render(self.text, True, self.color_text)
         button_text_rect = button_text.get_rect(
             center=(self.x_pos, self.y_pos))
         button_rect = pygame.rect.Rect(
             (self.x_pos - self.width / 2, self.y_pos - self.height / 2), (self.width, self.height))
-        if button_rect.collidepoint(mouse_pos) and self.enabled:
+        if self.check_hover() and self.enabled:
             pygame.draw.rect(self.screen, self.color_button1,
                              button_rect, 0, self.corner)
         else:
@@ -383,4 +378,13 @@ class Button():
         if left_click and button_rect.collidepoint(mouse_pos) and self.enabled:
             return True
         else:
+            return False
+
+    def check_hover(self):
+        mouse_pos = pygame.mouse.get_pos()
+        button_rect = pygame.rect.Rect(
+            (self.x_pos - self.width / 2, self.y_pos - self.height / 2), (self.width, self.height))
+        if button_rect.collidepoint(mouse_pos) and self.enabled :
+            return True
+        else :
             return False

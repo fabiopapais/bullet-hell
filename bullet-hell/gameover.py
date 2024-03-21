@@ -1,4 +1,5 @@
 import pygame
+import os
 
 import main
 import settings
@@ -10,7 +11,7 @@ from pygame.locals import (
     QUIT,
 )
 
-def menu():
+def gameover():
     pygame.init()
 
     clock = pygame.time.Clock()
@@ -39,33 +40,31 @@ def menu():
             elif event.type == QUIT:
                 running = False
 
-        logo = settings.font_logo.render("Polygon Wars", True, (255, 255, 255))
-        screen.blit(logo, logo.get_rect(
+        you_died = settings.font_logo.render("YOU DIED", True, (255, 0, 0))
+        screen.blit(you_died, you_died.get_rect(
             center=(settings.SCREEN_WIDTH/2, settings.SCREEN_HEIGHT/2 - 200)))
-        
-        insctructions = settings.font_instructions.render("W A S D  to move, MOUSE to shoot", True, (255, 255, 255))
-        screen.blit(insctructions, insctructions.get_rect(
-            center = (settings.SCREEN_WIDTH/2, settings.SCREEN_HEIGHT/2 - 100) ))
 
-        button_play = Button("Play", settings.SCREEN_WIDTH/2, settings.SCREEN_HEIGHT/2 + 50, True, 300, 150, settings.font_play,
+        button_restart = Button("Restart", settings.SCREEN_WIDTH/2, settings.SCREEN_HEIGHT/2 + 50, True, 400, 150, settings.font_play,
                             (255, 255, 255), (50, 50, 50), settings.background_color, (255, 255, 255), 10, screen)
 
-        button_berserk = Button("Berserk Mode", settings.SCREEN_WIDTH/2, settings.SCREEN_HEIGHT/2 + 200, True, 180, 90, settings.font_berserk,
+        button_menu = Button("Menu", 100, settings.SCREEN_HEIGHT - 60, True, 180, 90, settings.font_berserk,
+                                (255, 255, 255), (50, 50, 50), settings.background_color, (255, 255, 255), 10, screen)
+        
+        button_credits= Button("Credits",settings.SCREEN_WIDTH - 100, settings.SCREEN_HEIGHT - 60, True, 180, 90, settings.font_berserk,
                                 (255, 255, 255), (50, 50, 50), settings.background_color, (255, 255, 255), 10, screen)
 
-        if button_play.check_click():
-            main.main(1)
-            settings.MODE = "normal"
+        if button_restart.check_click():
+            if settings.MODE == "normal" :
+                main.main(1)
+                running = False
+            if settings.MODE == "BERSERK" :
+                main.main(2)
+                running = False
+
+        if button_menu.check_click() :
+            from menu import menu
+            menu()
             running = False
-        if button_berserk.check_click():
-            main.main(2)
-            settings.MODE = "BERSERK"
-            running = False
-        if button_berserk.check_hover():
-            description_text = settings.font_description.render("don't spawn lives", True, (255, 255, 255))
-            screen.blit(description_text, description_text.get_rect(
-                center =(settings.SCREEN_WIDTH/2, settings.SCREEN_HEIGHT/2 + 270)))
 
         pygame.display.flip()
     pygame.quit()
-menu()
