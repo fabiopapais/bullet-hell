@@ -17,7 +17,7 @@ No loop principal, além da criação dos indicadores para o usuário, também e
 
 
 ## Ferramentas utilizadas
-O projeto foi programado em Python, e fez uso da biblioteca externa Pygame, a qual permite com que o programa rode de forma constante e, dessa forma, permite com que o jogo funcione. Além disso, também foram utilizadas algumas bibliotecas como random, a fim de implementar elementos de aleatoriedade no que inimigos podem deixar pra trás ao morrerem.
+O projeto foi programado em Python, e fez uso da biblioteca externa Pygame, a qual permite que o programa rode de forma constante e, dessa forma, permite com que o jogo funcione. Além disso, também foram utilizadas algumas bibliotecas como random, a fim de implementar elementos de aleatoriedade no que inimigos podem deixar pra trás ao morrerem.
 
 
 ## Divisão de trabalho
@@ -40,7 +40,7 @@ Não ter começado features além da gameplay antes (menu, gráficos, sons, etc)
 Entender a escala do projeto, implementear o movimento de elementos de um modo geral, e dividir as tarefas entre os membros da equipe. Lidamos com um aumento da comunicação entre os membros e reuniões que estabeleceram o escopo do projeto.
 
 ### - Quais as lições aprendidas durante o projeto? 
-Aprender a trabalhar em equipe para fazer um projeto dessa escala, comunicação entre a equipe, familizarização maior com a biblioteca de pygame, aprender a escrever código modularizado, a importancia de bons comentários no código, e a importância de padronizar o código quando se trabalha em equipe.
+Aprender a trabalhar em equipe para fazer um projeto dessa escala, comunicação entre a equipe, familizarização maior com a biblioteca de Pygame, aprender a escrever código modularizado, a utilidade de bons comentários no código, e a importância de padronizar o código quando se trabalha em equipe.
 
 
 ## Capturas de tela
