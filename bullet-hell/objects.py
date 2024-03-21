@@ -123,7 +123,8 @@ class Bullet(pygame.sprite.Sprite):
         self.surf = pygame.Surface((size, size))
 
         # draw the surface of the Object
-        pygame.draw.rect(self.surf, (settings.red), (0, 0, size, size), border_radius=2)
+        pygame.draw.rect(self.surf, (settings.red),
+                         (0, 0, size, size), border_radius=2)
         pygame.draw.rect(self.surf, (settings.background_color),
                          (2, 2, size-4, size-4), border_radius=2)
 
@@ -171,7 +172,8 @@ class GuidedBullet(pygame.sprite.Sprite):
         self.surf = pygame.Surface((20, 20))
 
         # draw the surface of the Object
-        pygame.draw.rect(self.surf, (settings.orange), (0, 0, 20, 20), border_radius=2)
+        pygame.draw.rect(self.surf, (settings.orange),
+                         (0, 0, 20, 20), border_radius=2)
         pygame.draw.rect(self.surf, (settings.background_color),
                          (2, 2, 16, 16), border_radius=2)
 
@@ -228,7 +230,8 @@ class ChaseBullet(pygame.sprite.Sprite):
         self.surf = pygame.Surface((20, 20))
 
         # draw the surface of the Object
-        pygame.draw.rect(self.surf, (settings.pink), (0, 0, 20, 20), border_radius=2)
+        pygame.draw.rect(self.surf, (settings.pink),
+                         (0, 0, 20, 20), border_radius=2)
         pygame.draw.rect(self.surf, (settings.background_color),
                          (2, 2, 16, 16), border_radius=2)
 
@@ -283,7 +286,8 @@ class AllyBullet(pygame.sprite.Sprite):
         self.surf = pygame.Surface((10, 10))
 
         # draw the surface of the Object
-        pygame.draw.rect(self.surf, (settings.white), (0, 0, 10, 10), border_radius=5)
+        pygame.draw.rect(self.surf, (settings.white),
+                         (0, 0, 10, 10), border_radius=5)
 
         self.speed = speed
         self.hp = hp
@@ -328,15 +332,13 @@ class Collectable(pygame.sprite.Sprite):
             center=position
         )
 
-
 class Button():
     """
     Botoes para serem usados tanto na pagina de menu
     quanto numa possivel pagina de end game
     """
-
     def __init__(self, text, x_pos, y_pos, enabled, width, height, font,
-                 color_text, color_button1, color_button2, color_outline, corner, screen, sound_hover):
+                 color_text, color_text_hover, color_button, color_button_hover, color_outline, corner, screen):
         self.text = text
         self.x_pos = x_pos
         self.y_pos = y_pos
@@ -344,46 +346,46 @@ class Button():
         self.width = width
         self.height = height
         self.font = font
+        
         self.color_text = color_text
-        self.color_button1 = color_button1
-        self.color_button2 = color_button2
+        self.color_text_hover = color_text_hover
+        
+        self.color_button = color_button
+        self.color_button_hover = color_button_hover
+        
         self.color_outline = color_outline
+        
         self.corner = corner
         self.screen = screen
-        self.sound_hover = sound_hover
-
-
 
     def draw(self):
-
-        mouse_pos = pygame.mouse.get_pos()
-        left_click = pygame.mouse.get_pressed()[0]
-        button_rect = pygame.rect.Rect(
-            (self.x_pos - self.width / 2, self.y_pos - self.height / 2), (self.width, self.height))
-
         button_text = self.font.render(self.text, True, self.color_text)
         button_text_rect = button_text.get_rect(
             center=(self.x_pos, self.y_pos))
         button_rect = pygame.rect.Rect(
             (self.x_pos - self.width / 2, self.y_pos - self.height / 2), (self.width, self.height))
-        if button_rect.collidepoint(mouse_pos) and self.enabled:
-            pygame.draw.rect(self.screen, self.color_button1,
+        if self.check_hover() and self.enabled:
+            pygame.draw.rect(self.screen, self.color_button_hover,
                              button_rect, 0, self.corner)
-            
-            already_hover = True
+            button_text = self.font.render(self.text, True, self.color_text_hover)
         else:
-            pygame.draw.rect(self.screen, self.color_button2,
+            pygame.draw.rect(self.screen, self.color_button,
                              button_rect, 0, self.corner)
-            
-            already_hover = False
-            
+            button_text = self.font.render(self.text, True, self.color_text)
 
         pygame.draw.rect(self.screen, self.color_outline,
                          button_rect, 2, self.corner)
         self.screen.blit(button_text, button_text_rect)
 
-        return already_hover
-    
+    def check_hover(self):
+        mouse_pos = pygame.mouse.get_pos()
+        button_rect = pygame.rect.Rect(
+            (self.x_pos - self.width / 2, self.y_pos - self.height / 2), (self.width, self.height))
+        if button_rect.collidepoint(mouse_pos) and self.enabled:
+            return True
+        else:
+            return False
+
     def check_click(self):
         mouse_pos = pygame.mouse.get_pos()
         left_click = pygame.mouse.get_pressed()[0]
@@ -394,4 +396,3 @@ class Button():
             return True
         else:
             return False
-    

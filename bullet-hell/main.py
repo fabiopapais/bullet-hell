@@ -3,6 +3,7 @@ import os
 from random import randint, choice
 
 import settings
+import gameover
 from objects import Player, AllyBullet, Collectable
 from strategies import *
 
@@ -15,7 +16,6 @@ from pygame.locals import (
 pygame.display.set_caption('Polygon Wars')
 
 def main(difficulty=2):
-
     # Altera parâmetros para dificuldade
     if difficulty == 2 :
         settings.INITIAL_HP = 5
@@ -32,8 +32,6 @@ def main(difficulty=2):
     screen = pygame.display.set_mode((settings.SCREEN_WIDTH, settings.SCREEN_HEIGHT), pygame.RESIZABLE)
 
     player = Player(hp=settings.INITIAL_HP, speed=settings.INITIAL_PLAYER_SPEED, atkspd=settings.INITIAL_ATKSP)
-    playerinvincible = False
-    playerinvincible_counter = 0
 
     # Grupos de sprites
     bullets = pygame.sprite.Group()
@@ -44,8 +42,10 @@ def main(difficulty=2):
 
     # Informações mostradas ao jogador
     killed_enemies = 0
+    playerinvincible_counter = 0
+    killed_enemies_total = 0
     alliedbulletspeed = settings.INITIAL_ALLY_BULLET_SPEED
-
+    playerinvincible = False
 
     #Sound effects
     sound_damage = pygame.mixer.Sound('./bullet-hell/assets/sound-damage.mp3')
@@ -55,7 +55,6 @@ def main(difficulty=2):
     sound_collectable.set_volume(0.3)
     sound_enemy_die = pygame.mixer.Sound('./bullet-hell/assets/sound-enemy-die.wav')
     sound_enemy_die.set_volume(0.25)
-    
     
     counter = 0
     running = True
@@ -136,10 +135,10 @@ def main(difficulty=2):
         elif killed_enemies > 2000:
             if counter%10 == 0:
                 strategy_guided_square_edge(bullets, all_sprites, player)
-
         bullets.update()
+
         # Lógica de spawn de coletável
-        if counter == 1 and difficulty != 2:
+        if counter == 1 and difficulty != 2 and settings.MODE != "BERSERK":
             col = Collectable(((randint(0,settings.SCREEN_WIDTH-settings.COLLECTABLE_RADIUS),randint(0,settings.SCREEN_HEIGHT-settings.COLLECTABLE_RADIUS))),settings.COLLECTABLE_RADIUS,(settings.green))
             collectables.add(col)
             all_sprites.add(col)
@@ -168,6 +167,9 @@ def main(difficulty=2):
                 playerinvincible_counter = settings.INVINCIBILITY_FRAMES
                 if player.hp <= 0:
                     player.kill()
+                    killed_enemies_total = killed_enemies
+                    pygame.mixer.music.stop()
+                    gameover.gameover()
                     running = False
 
         # Lógica de colisões com entre tiros inimigos e aliados
@@ -211,11 +213,9 @@ def main(difficulty=2):
 
         bullet_speedDisplay = settings.stats_font.render(str(alliedbulletspeed), 10, (settings.white))
         screen.blit(bullet_speedDisplay, (70, 155))
-
+        
         pygame.display.flip()
         clock.tick(settings.FPS) # Altera o fps do jogo
-    pygame.quit()
-
 
 if __name__ == "__main__":
     main()

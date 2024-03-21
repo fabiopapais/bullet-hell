@@ -16,6 +16,7 @@ INVINCIBILITY_FRAMES = 20
 COLLECTABLE_RADIUS = 10
 COLLECTABLE_SPAWN_CHANCE = 10
 FPS = 60
+MODE = "normal"
 
 
 # colors
@@ -35,3 +36,5 @@ stats_font = pygame.font.Font(os.path.abspath('./bullet-hell/assets/Dune_Rise.tt
 font_play = pygame.font.Font(os.path.abspath('./bullet-hell/assets/Dune_Rise.ttf'), 48)
 font_berserk = pygame.font.Font(os.path.abspath('./bullet-hell/assets/Dune_Rise.ttf'), 14)
 font_logo = pygame.font.Font(os.path.abspath('./bullet-hell/assets/Dune_Rise.ttf'), 86)
+font_description = pygame.font.Font(os.path.abspath('./bullet-hell/assets/METHANERSE Free Trial.ttf'), 25)
+font_instructions = pygame.font.Font(os.path.abspath('./bullet-hell/assets/METHANERSE Free Trial.ttf'), 25)
